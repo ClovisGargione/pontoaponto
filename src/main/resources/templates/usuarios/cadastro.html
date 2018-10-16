@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+      layout:decorate="~{layouts/layout}">
+
+    <body>
+
+        <br/>
+            <div layout:fragment="header" class="jumbotron">
+                <h1>Ponto a ponto</h1>
+            </div>
+        <div layout:fragment="content" class="container">
+
+
+            <h2>Cadastre-se</h2>
+
+            <form action="#" th:action="@{/usuarios}" th:object="${dadosDeRegistro}" method="post">
+                <div class="form-group">
+                    <label for="nome">Nome:</label>
+                    <input class="form-control" id="nome" type="text" th:field="*{nome}"/>
+                    <div th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}">preencher o nome</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-mail:</label>
+                    <input class="form-control" id="email" type="text" th:field="*{email}"/>
+                    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}">preencher o email</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">Senha:</label>
+                    <input class="form-control" id="senha" type="password" th:field="*{senha}"/>
+                    <div th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}">preencher a senha</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pis">Pis:</label>
+                    <input class="form-control" id="pis" type="text" th:field="*{pis}"/>
+                    <div th:if="${#fields.hasErrors('pis')}" th:errors="*{pis}">preencher o pis</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="nome">Nsr:</label>
+                    <input class="form-control" id="nsr" type="text" th:field="*{nsr}"/>
+                    <div th:if="${#fields.hasErrors('nsr')}" th:errors="*{nsr}">preencher o nsr</div>
+                </div>
+
+
+                <div class="form-group">
+                    <button class="btn btn-primary" type="submit">Enviar</button>
+                    <button class="btn btn-default" type="button" onclick="javascript: window.location.href = '/'">Cancelar</button>
+                </div>
+            </form>
+
+        </div>
+    </body>
+</html>

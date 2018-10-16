@@ -1,0 +1,25 @@
+server:
+  port: 8088
+spring:
+  application:
+    name: pontoaponto
+     # REST   
+  data:
+    rest:
+      base-path: rest
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+      showSql: true
+      hbm2ddl: true
+      ddlAuto: update
+  # JACKSON
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true

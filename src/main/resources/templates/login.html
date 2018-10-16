@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      layout:decorate="~{layouts/layout}">
+    <head>
+        <title>ponto a ponto</title>
+    </head>
+    <body>
+
+        <br/>
+        <div layout:fragment="header" class="jumbotron">
+            <h1>Ponto a ponto</h1>
+            <p>
+                Esse é o sistema onde você organiza o seu tempo investido!!!
+            </p>
+        </div>
+        <div layout:fragment="content"  class="container">
+
+
+            <div th:if="${param.error}">
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                    Usuário ou senha inválidos
+                </div>
+            </div>
+
+            <h2>Login</h2>
+
+            <form th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <label> Login: <input class="form-control" type="text" name="username"/> </label>
+                </div>
+
+                <div class="form-group">
+                    <label> Senha: <input class="form-control" type="password" name="password"/> </label>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                    <button type="button" class="btn btn-default" onclick="javascript: window.location.href = '/home'">Voltar</button>
+                </div>
+
+                <p>
+                    Não tem conta? <a href="/usuarios">Faça seu cadastro</a><br/>
+                </p>
+
+            </form>
+
+        </div>
+
+    </body>
+
+
+</html>
