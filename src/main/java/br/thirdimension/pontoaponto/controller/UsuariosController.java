@@ -44,8 +44,8 @@ public class UsuariosController {
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView cadastro() {
         ModelAndView mv = new ModelAndView("usuarios/cadastro");
-        CredenciaisDoUsuario dadosDeRegistro = new CredenciaisDoUsuario();
-        mv.addObject("dadosDeRegistro", dadosDeRegistro);
+        CredenciaisDoUsuario credenciaisDoUsuario = new CredenciaisDoUsuario();
+        mv.addObject("credenciaisDoUsuario", credenciaisDoUsuario);
         return mv;
     }
 
@@ -56,13 +56,20 @@ public class UsuariosController {
      * @return
      */
     @RequestMapping(method = RequestMethod.POST)
-    public ModelAndView registrar(@Valid CredenciaisDoUsuario dadosDeRegistro, BindingResult bindingResult) {
+    public ModelAndView registrar(@Valid CredenciaisDoUsuario credenciaisDoUsuario, BindingResult bindingResult) {
+        ModelAndView mv = null;
         if (bindingResult.hasErrors()) {
-            return new ModelAndView("usuarios/cadastro");
+            if(credenciaisDoUsuario.getId() != null){
+            mv = new ModelAndView("usuarios/editar");    
+            }else{
+            mv = new ModelAndView("usuarios/cadastro",  "formErrors",bindingResult.getAllErrors());   
+            }
+            mv.addObject("credenciaisDoUsuario", credenciaisDoUsuario);
+            return mv;
         }
 
         //cria um usuario no sistema
-        Usuario usuario = new Usuario(dadosDeRegistro.getNome(), new Credenciais(dadosDeRegistro.getEmail(), dadosDeRegistro.getSenha()), dadosDeRegistro.getPis(), dadosDeRegistro.getNsr());
+        Usuario usuario = new Usuario(credenciaisDoUsuario.getId(), credenciaisDoUsuario.getNome(), new Credenciais(credenciaisDoUsuario.getEmail(), credenciaisDoUsuario.getSenha()), credenciaisDoUsuario.getPis(), credenciaisDoUsuario.getNsr());
 
         // persiste os dados do usuario
         usuarioRepository.save(usuario);
@@ -71,10 +78,23 @@ public class UsuariosController {
         mantemUsuarioAutenticado(authenticationManager, usuario);
 
         // usuário cadastrado é redirecionado para página de controle de livros
-        ModelAndView mv = new ModelAndView("redirect:/home");
+        mv = new ModelAndView("redirect:/home");
 
         return mv;
     }
+    
+    @RequestMapping(path = "/editar", method = RequestMethod.GET)
+    public ModelAndView editar() {
+        ModelAndView mv = new ModelAndView("usuarios/editar");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        ResourceOwner resourceOwner = (ResourceOwner) auth.getPrincipal();
+        Usuario usuario = resourceOwner.getUsuario();
+        CredenciaisDoUsuario credenciaisDoUsuario = new CredenciaisDoUsuario(usuario.getId(), usuario.getNome(), usuario.getCredenciais().getEmail(), usuario.getCredenciais().getSenha(), usuario.getPis(), usuario.getNsr());
+        mv.addObject("credenciaisDoUsuario", credenciaisDoUsuario);
+        return mv;
+    }
+    
+    
 
     /**
      * Esse método é usado apenas para adicionar o usuário recem cadastrado na

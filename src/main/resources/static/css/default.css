@@ -1,0 +1,11 @@
+.padding-card {
+	padding: 1.25rem;
+}
+
+.margin-card {
+	margin: 1rem;
+}
+
+.shadow {
+	box-shadow: 5px 10px 18px #888888;
+}

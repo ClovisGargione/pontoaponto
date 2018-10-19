@@ -6,6 +6,7 @@
 package br.thirdimension.pontoaponto.dto;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -13,6 +14,8 @@ import javax.validation.constraints.NotEmpty;
  */
 public class CredenciaisDoUsuario {
 
+    private Integer id;
+    
     @NotEmpty
     private String nome;
 
@@ -25,21 +28,32 @@ public class CredenciaisDoUsuario {
     @NotEmpty
     private String pis;
     
-    @NotEmpty
+    @NotEmpty(message = "NSR é obrigatório")
     private String nsr;
 
     public CredenciaisDoUsuario() {
         super();
     }
 
-    public CredenciaisDoUsuario(@NotEmpty String nome, @NotEmpty String email, @NotEmpty String senha, @NotEmpty String pis, @NotEmpty String nsr) {
+    public CredenciaisDoUsuario(Integer id, @NotEmpty String nome, @NotEmpty String email, @NotEmpty String senha, @NotEmpty String pis, @NotEmpty String nsr) {
         super();
+        this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
         this.pis = pis;
         this.nsr = nsr;
     }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    
+    
 
     public String getNome() {
         return nome;

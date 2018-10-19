@@ -31,7 +31,7 @@ public class ConfiguracaoDeSeguranca {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            String[] caminhosPermitidos = new String[]{"/", "/home", "/usuarios", "/webjars/**", "/static/**",
+            String[] caminhosPermitidos = new String[]{"/", "/usuarios", "/webjars/**", "/static/**",
                 "/jquery*", "/api/helloworld"};
 
             // @formatter:off

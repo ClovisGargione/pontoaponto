@@ -35,8 +35,9 @@ public class Usuario {
 
     }
 	
-    public Usuario(String nome, Credenciais credenciais, String pis, String nsr) {
+    public Usuario(Integer id, String nome, Credenciais credenciais, String pis, String nsr) {
             super();
+            this.id = id;
             this.nome = nome;
             this.credenciais = credenciais;
             this.pis = pis;

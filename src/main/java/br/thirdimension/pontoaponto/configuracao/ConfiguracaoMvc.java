@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
@@ -20,7 +20,7 @@ import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
  * @author clovis.rodrigues
  */
 @Configuration
-public class ConfiguracaoMvc extends WebMvcConfigurerAdapter {
+public class ConfiguracaoMvc implements WebMvcConfigurer {
 
 
     @Bean
@@ -39,11 +39,14 @@ public class ConfiguracaoMvc extends WebMvcConfigurerAdapter {
         registry.addResourceHandler("/static/**").addResourceLocations("/static/**");
     }
 
+    
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("home");
         registry.addViewController("/home").setViewName("home");
         registry.addViewController("/login").setViewName("login");
     }
+    
+    
 
 }
