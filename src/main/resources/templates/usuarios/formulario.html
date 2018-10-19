@@ -1,44 +1,42 @@
-<!DOCTYPE html>
 <!--
 To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" 
       xmlns:th="http://www.thymeleaf.org" 
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
       layout:decorate="~{layouts/layout}">
 
-    <head>
-          <link rel="stylesheet" href="/css/default.css" type="text/css">
-    </head>
     <body>
 
-        <br/>
-        <div layout:fragment="header" >
-            <br>
+        <div layout:fragment="header">
+            <div class="jumbotron shadow default-color" style="padding: 1rem 3rem" sec:authorize="not isAuthenticated()">
+                <h1>Ponto a ponto</h1>
+                <p>
+                    Esse é o sistema onde você organiza suas horas!!!
+                </p>
+            </div>
+            <br sec:authorize="isAuthenticated()"/>
         </div>
         <div layout:fragment="content" class="container">
 
-
-           <!-- <h2><i class="fa fa-id-card-o"></i> Atualizar cadastro</h2>-->
-
-
             <div class="card shadow">
-                <h3 class="card-header">
-                    <i class="fa fa-id-card-o"></i>  Atualizar cadastro
-                </h3>
+                <h4 class="card-header">
+                    <i class="fa fa-id-card-o"></i>  <span th:text="${cabecalho}"></span>
+                </h4>
                 <div class="card-block padding-card">
-                    <h4 class="card-title">Editar usuário</h4>
+                    <h5 class="card-title" th:text="${titulo}"></h5>
                     <form action="#" th:action="@{/usuarios}" th:object="${credenciaisDoUsuario}" method="post">
                         <fieldset>
                             <div class="form-row">
-                                <div class="col-md-6">
-                                    <div class="form-group" disabled>
+                                <div class="col-md-6 esconder">
+                                    <div class="form-group">
                                         <label for="nome">Id:</label >
                                         <input class="form-control" id="id" type="number" th:field="*{id}" readonly="readonly">
-                                        <div th:if="${#fields.hasErrors('id')}" th:errors="*{id}">preencher o id</div>
+                                            <div th:if="${#fields.hasErrors('id')}" th:errors="*{id}">preencher o id</div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -50,12 +48,12 @@ and open the template in the editor.
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="email">E-mail:</label>
+                                        <label for="email">Login:</label>
                                         <input class="form-control" id="email" type="text" th:field="*{email}"/>
                                         <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}">preencher o email</div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6" th:class="*{id} ? esconder : col-md-6">
                                     <div class="form-group">
                                         <label for="senha">Senha:</label>
                                         <input class="form-control" id="senha" name="senha" autocomplete="senha atual" type="password" th:value="*{senha}"/>

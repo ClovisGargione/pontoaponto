@@ -10,11 +10,11 @@
     <body>
 
         <br/>
-        <div layout:fragment="header" class="container jumbotron mt-4">
+        <div layout:fragment="header" class="container jumbotron mt-4 shadow default-color">
 
             <h1>Ponto a ponto</h1>
             <p>
-                Esse é o sistema onde você organiza o seu tempo!!!
+                Esse é o sistema onde você organiza suas horas!!!
             </p>
         </div>
         <div layout:fragment="content" class="container">
@@ -32,17 +32,21 @@
                     <p sec:authorize="not isAuthenticated()">
                         Faça login para poder visualizar seus registros de ponto.
                     </p>
-
-                    <p>
-                        <div>
+                    
+                    <p >
+                        <div sec:authorize="isAuthenticated()">
                             <a class="btn btn-primary" href="/usuarios/editar"><i class="fa fa-user"></i> Editar perfil</a>
                         </div>
+                        <div sec:authorize="not isAuthenticated()">
+                            <a class="btn btn-primary" href="/login"><i class="fa fa-sign-in"></i> Login</a>
+                        </div>
                     </p>
+
                 </div>
 
                 <div class="col-md-6">
 
-                    <h3>Veja suas batidas realizadas</h3>
+                    <h3>Veja seus registros de ponto</h3>
                     <p>
                         Aqui você pode visualizar seus registros de ponto.<br>
                         Lembre-se sempre de manter seu apontamento de horas no JIRA atualizado!

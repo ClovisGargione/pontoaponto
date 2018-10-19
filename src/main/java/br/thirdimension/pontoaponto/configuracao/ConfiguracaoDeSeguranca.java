@@ -32,7 +32,7 @@ public class ConfiguracaoDeSeguranca {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             String[] caminhosPermitidos = new String[]{"/", "/usuarios", "/webjars/**", "/static/**",
-                "/jquery*", "/api/helloworld"};
+                "/jquery*", "/api/helloworld", "/css/**", "/time**"};
 
             // @formatter:off
             http.authorizeRequests().antMatchers(caminhosPermitidos).permitAll().anyRequest().authenticated().and()

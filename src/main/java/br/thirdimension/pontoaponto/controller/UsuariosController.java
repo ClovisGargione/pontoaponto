@@ -43,8 +43,10 @@ public class UsuariosController {
      */
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView cadastro() {
-        ModelAndView mv = new ModelAndView("usuarios/cadastro");
+        ModelAndView mv = new ModelAndView("usuarios/formulario");
         CredenciaisDoUsuario credenciaisDoUsuario = new CredenciaisDoUsuario();
+        mv.addObject("cabecalho", "Cadastrar usuário");
+        mv.addObject("titulo", "Criar um novo usuário");
         mv.addObject("credenciaisDoUsuario", credenciaisDoUsuario);
         return mv;
     }
@@ -59,11 +61,7 @@ public class UsuariosController {
     public ModelAndView registrar(@Valid CredenciaisDoUsuario credenciaisDoUsuario, BindingResult bindingResult) {
         ModelAndView mv = null;
         if (bindingResult.hasErrors()) {
-            if(credenciaisDoUsuario.getId() != null){
-            mv = new ModelAndView("usuarios/editar");    
-            }else{
-            mv = new ModelAndView("usuarios/cadastro",  "formErrors",bindingResult.getAllErrors());   
-            }
+            mv = new ModelAndView("usuarios/formulario");
             mv.addObject("credenciaisDoUsuario", credenciaisDoUsuario);
             return mv;
         }
@@ -82,19 +80,17 @@ public class UsuariosController {
 
         return mv;
     }
-    
+
     @RequestMapping(path = "/editar", method = RequestMethod.GET)
     public ModelAndView editar() {
-        ModelAndView mv = new ModelAndView("usuarios/editar");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        ResourceOwner resourceOwner = (ResourceOwner) auth.getPrincipal();
-        Usuario usuario = resourceOwner.getUsuario();
+        ModelAndView mv = new ModelAndView("usuarios/formulario");
+        Usuario usuario = getUsuarioLogado();
         CredenciaisDoUsuario credenciaisDoUsuario = new CredenciaisDoUsuario(usuario.getId(), usuario.getNome(), usuario.getCredenciais().getEmail(), usuario.getCredenciais().getSenha(), usuario.getPis(), usuario.getNsr());
+        mv.addObject("cabecalho", "Atualizar cadastro");
+        mv.addObject("titulo", "Editar dados do perfil");
         mv.addObject("credenciaisDoUsuario", credenciaisDoUsuario);
         return mv;
     }
-    
-    
 
     /**
      * Esse método é usado apenas para adicionar o usuário recem cadastrado na
@@ -108,6 +104,13 @@ public class UsuariosController {
         Authentication auth = new UsernamePasswordAuthenticationToken(
                 new ResourceOwner(usuario), usuario.getCredenciais().getSenha());
         SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(auth));
+    }
+
+    private Usuario getUsuarioLogado() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        ResourceOwner resourceOwner = (ResourceOwner) auth.getPrincipal();
+        Usuario usuario = resourceOwner.getUsuario();
+        return usuario;
     }
 
 }
