@@ -7,6 +7,7 @@ package br.thirdimension.pontoaponto.controller;
 
 import br.thirdimension.pontoaponto.configuracao.ResourceOwner;
 import br.thirdimension.pontoaponto.dto.CredenciaisDoUsuario;
+import br.thirdimension.pontoaponto.dto.Senha;
 import br.thirdimension.pontoaponto.model.Credenciais;
 import br.thirdimension.pontoaponto.model.Usuario;
 import br.thirdimension.pontoaponto.repository.UsuarioRepository;
@@ -18,6 +19,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -89,6 +92,38 @@ public class UsuariosController {
         mv.addObject("cabecalho", "Atualizar cadastro");
         mv.addObject("titulo", "Editar dados do perfil");
         mv.addObject("credenciaisDoUsuario", credenciaisDoUsuario);
+        return mv;
+    }
+    
+    @RequestMapping(path="/redefinirsenha", method = RequestMethod.GET)
+    public ModelAndView redefinirSenha() {
+        ModelAndView mv = new ModelAndView("usuarios/senha");
+        Senha senha = new Senha();
+        senha.setSenhaAntiga(getUsuarioLogado().getCredenciais().getSenha());
+        mv.addObject("senha", senha);
+        return mv;
+    }
+    
+    @RequestMapping(path="/redefinirsenha", method = RequestMethod.POST)
+    public ModelAndView salvarSenha(@Valid Senha senha, BindingResult bindingResult) {
+        ModelAndView mv = null;
+        if(!senha.getNovaSenha().equals(senha.getNovaSenhaRepetida())){
+            ObjectError error = new FieldError("senha", "novaSenhaRepetida", "Nova senha e confirmação de senha devem ser iguais");
+            
+            bindingResult.addError(error);
+        }
+        if (bindingResult.hasErrors()) {
+            mv = new ModelAndView("usuarios/senha");
+            mv.addObject("senha", senha);
+            return mv;
+        }
+        
+        Usuario usuario = getUsuarioLogado();
+        usuario.getCredenciais().setSenha(senha.getNovaSenha());
+        usuarioRepository.save(usuario);
+        // autentica o usuário recem-registrado para que o mesmo nao precise fazer o login
+        mantemUsuarioAutenticado(authenticationManager, usuario);
+        mv = new ModelAndView("redirect:/home");
         return mv;
     }
 

@@ -16,16 +16,16 @@ public class CredenciaisDoUsuario {
 
     private Integer id;
     
-    @NotEmpty
+    @NotEmpty(message = "Nome é obrigatório")
     private String nome;
 
-    @NotEmpty
+    @NotEmpty(message = "Login é obrigatório")
     private String email;
 
-    @NotEmpty
+    @NotEmpty(message = "Senha é obrigatório")
     private String senha;
     
-    @NotEmpty
+    @NotEmpty(message = "PIS é obrigatório")
     private String pis;
     
     @NotEmpty(message = "NSR é obrigatório")

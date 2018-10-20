@@ -42,36 +42,36 @@ and open the template in the editor.
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="nome">Nome:</label>
-                                        <input class="form-control" id="nome" type="text" th:field="*{nome}"/>
-                                        <div th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}">preencher o nome</div>
+                                        <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('nome'))} ? is-invalid" id="nome" type="text" th:field="*{nome}"/>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}">preencher o nome</div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="email">Login:</label>
-                                        <input class="form-control" id="email" type="text" th:field="*{email}"/>
-                                        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}">preencher o email</div>
+                                        <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('email'))} ? is-invalid" id="email" type="text" th:field="*{email}"/>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">preencher o email</div>
                                     </div>
                                 </div>
                                 <div class="col-md-6" th:class="*{id} ? esconder : col-md-6">
                                     <div class="form-group">
                                         <label for="senha">Senha:</label>
-                                        <input class="form-control" id="senha" name="senha" autocomplete="senha atual" type="password" th:value="*{senha}"/>
-                                        <div th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}">preencher a senha</div>
+                                        <input class="form-control" id="senha" th:classappend="${not #lists.isEmpty(#fields.errors('senha'))} ? is-invalid" name="senha" autocomplete="senha atual" type="password" th:value="*{senha}"/>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}">preencher a senha</div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="pis">Pis:</label>
-                                        <input class="form-control" id="pis" type="text" th:field="*{pis}"/>
-                                        <div th:if="${#fields.hasErrors('pis')}" th:errors="*{pis}">preencher o pis</div>
+                                        <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('pis'))} ? is-invalid" id="pis" type="text" th:field="*{pis}"/>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('pis')}" th:errors="*{pis}">preencher o pis</div>
                                     </div>
                                 </div> 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="nome">Nsr:</label>
-                                        <input class="form-control" name="nsr" id="nsr" type="text" th:field="*{nsr}"/>
-                                        <div th:if="${#fields.hasErrors('nsr')}" th:errors="*{nsr}">preencher o nsr</div>
+                                        <label for="nome">NSR:</label>
+                                        <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('nsr'))} ? is-invalid" name="nsr" id="nsr" type="text" th:field="*{nsr}"/>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('nsr')}" th:errors="*{nsr}">preencher o nsr</div>
                                     </div>
                                 </div>
                             </div>   

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html layout:decorate="~{layouts/layout}">
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div layout:fragment="header">
+            <br/>
+        </div>
+         <div layout:fragment="content" class="container">
+
+            <div class="card shadow">
+                <h4 class="card-header">
+                    <i class="fa fa-key"></i>  <span>Redefinição de senha</span>
+                </h4>
+                <div class="card-block padding-card">
+                    <h5 class="card-title">Redefinir senha do usuário logado</h5>
+                    <form action="#" th:action="@{/usuarios/redefinirsenha}" th:object="${senha}" method="post">
+                        <fieldset>
+                            <div class="form-row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="senhaAntiga">Senha atual</label >
+                                        <input class="form-control" id="senhaAntiga" type="password" name="senhaAntiga" th:value="*{senhaAntiga}" readonly="readonly">
+                                            <div th:if="${#fields.hasErrors('senhaAntiga')}" th:errors="*{senhaAntiga}"></div>
+                                    </div>
+                                </div>
+                             
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="novaSenha">Nova senha</label>
+                                        <input class="form-control" id="novaSenha" th:classappend="${not #lists.isEmpty(#fields.errors('novaSenha'))} ? is-invalid" name="novaSenha" autocomplete="nova senha" type="password" th:field="*{novaSenha}"/>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('novaSenha')}" th:errors="*{novaSenha}"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="novaSenhaRepetida">Confirmar nova Senha</label>
+                                        <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('novaSenhaRepetida'))} ? is-invalid" id="novaSenhaRepetida" type="password" th:field="*{novaSenhaRepetida}"/>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('novaSenhaRepetida')}" th:errors="*{novaSenhaRepetida}"></div>
+                                    </div>
+                                </div> 
+                            </div>   
+                        </fieldset>
+                        <div class="card-footer bg-transparent text-right">
+                            <div class="form-group">
+                                <button class="btn btn-primary" type="submit">Enviar</button>
+                                <button class="btn btn-default" type="button" onclick="javascript: window.location.href = '/'">Cancelar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>    
+            </div>
+        </div>
+    </body>
+</html>
