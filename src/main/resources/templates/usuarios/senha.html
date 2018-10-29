@@ -5,16 +5,12 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html layout:decorate="~{layouts/layout}">
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
+    
+    <body class="background-default">
         <div layout:fragment="header">
             <br/>
         </div>
-         <div layout:fragment="content" class="container">
+        <div layout:fragment="content" class="container">
 
             <div class="card shadow">
                 <h4 class="card-header">
@@ -28,26 +24,41 @@ and open the template in the editor.
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="senhaAntiga">Senha atual</label >
-                                        <input class="form-control" id="senhaAntiga" type="password" name="senhaAntiga" th:value="*{senhaAntiga}" readonly="readonly">
+                                        <div class="input-group" id="show_hide_password">
+                                            <input class="form-control" id="senhaAntiga" type="password" name="senhaAntiga" th:value="*{senhaAntiga}" readonly="readonly">
+                                            <div class="input-group-append" onclick="showHidePassword('senhaAntiga', 'iconeSenhaAntiga')">
+                                                <span class="input-group-text"> <a href="#"><i id="iconeSenhaAntiga" class="fa fa-eye-slash" aria-hidden="true"></i></a></span>
+                                            </div>
                                             <div th:if="${#fields.hasErrors('senhaAntiga')}" th:errors="*{senhaAntiga}"></div>
+                                        </div>
+
                                     </div>
                                 </div>
-                             
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="novaSenha">Nova senha</label>
-                                        <input class="form-control" id="novaSenha" th:classappend="${not #lists.isEmpty(#fields.errors('novaSenha'))} ? is-invalid" name="novaSenha" autocomplete="nova senha" type="password" th:field="*{novaSenha}"/>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('novaSenha')}" th:errors="*{novaSenha}"></div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="novaSenha">Nova senha</label>
+                                            <div class="input-group" id="show_hide_password">
+                                                <input class="form-control" id="novaSenha" th:classappend="${not #lists.isEmpty(#fields.errors('novaSenha'))} ? is-invalid" name="novaSenha" autocomplete="nova senha" type="password" th:field="*{novaSenha}"/>
+                                                <div class="input-group-append" onclick="showHidePassword('novaSenha', 'iconeNovaSenha')">
+                                                    <span class="input-group-text"> <a href="#"><i id="iconeNovaSenha" class="fa fa-eye-slash" aria-hidden="true"></i></a></span>
+                                                </div>
+                                                <div class="invalid-feedback" th:if="${#fields.hasErrors('novaSenha')}" th:errors="*{novaSenha}"></div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="novaSenhaRepetida">Confirmar nova Senha</label>
-                                        <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('novaSenhaRepetida'))} ? is-invalid" id="novaSenhaRepetida" type="password" th:field="*{novaSenhaRepetida}"/>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('novaSenhaRepetida')}" th:errors="*{novaSenhaRepetida}"></div>
-                                    </div>
-                                </div> 
-                            </div>   
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="novaSenhaRepetida">Confirmar nova Senha</label>
+                                            <div class="input-group" id="show_hide_password">
+                                                <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('novaSenhaRepetida'))} ? is-invalid" id="novaSenhaRepetida" type="password" th:field="*{novaSenhaRepetida}"/>
+                                                <div class="input-group-append" onclick="showHidePassword('novaSenhaRepetida', 'iconeNovaSenhaRepetida')">
+                                                    <span class="input-group-text"> <a href="#"><i id="iconeNovaSenhaRepetida" class="fa fa-eye-slash" aria-hidden="true"></i></a></span>
+                                                </div>
+                                                <div class="invalid-feedback" th:if="${#fields.hasErrors('novaSenhaRepetida')}" th:errors="*{novaSenhaRepetida}"></div>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                </div>   
                         </fieldset>
                         <div class="card-footer bg-transparent text-right">
                             <div class="form-group">

@@ -63,6 +63,11 @@ public class UsuariosController {
     @RequestMapping(method = RequestMethod.POST)
     public ModelAndView registrar(@Valid CredenciaisDoUsuario credenciaisDoUsuario, BindingResult bindingResult) {
         ModelAndView mv = null;
+        if(!credenciaisDoUsuario.getSenha().equals(credenciaisDoUsuario.getConfirmacaoSenha())){
+            ObjectError error = new FieldError("credenciaisDoUsuario", "confirmacaoSenha", "Senha e confirmação de senha devem ser iguais");
+            
+            bindingResult.addError(error);
+        }
         if (bindingResult.hasErrors()) {
             mv = new ModelAndView("usuarios/formulario");
             mv.addObject("credenciaisDoUsuario", credenciaisDoUsuario);
@@ -70,7 +75,7 @@ public class UsuariosController {
         }
 
         //cria um usuario no sistema
-        Usuario usuario = new Usuario(credenciaisDoUsuario.getId(), credenciaisDoUsuario.getNome(), new Credenciais(credenciaisDoUsuario.getEmail(), credenciaisDoUsuario.getSenha()), credenciaisDoUsuario.getPis(), credenciaisDoUsuario.getNsr());
+        Usuario usuario = new Usuario(credenciaisDoUsuario.getId(), credenciaisDoUsuario.getNome(), new Credenciais(credenciaisDoUsuario.getEmail(), credenciaisDoUsuario.getSenha()), credenciaisDoUsuario.getPis());
 
         // persiste os dados do usuario
         usuarioRepository.save(usuario);
@@ -88,7 +93,7 @@ public class UsuariosController {
     public ModelAndView editar() {
         ModelAndView mv = new ModelAndView("usuarios/formulario");
         Usuario usuario = getUsuarioLogado();
-        CredenciaisDoUsuario credenciaisDoUsuario = new CredenciaisDoUsuario(usuario.getId(), usuario.getNome(), usuario.getCredenciais().getEmail(), usuario.getCredenciais().getSenha(), usuario.getPis(), usuario.getNsr());
+        CredenciaisDoUsuario credenciaisDoUsuario = new CredenciaisDoUsuario(usuario.getId(), usuario.getNome(), usuario.getCredenciais().getEmail(), usuario.getCredenciais().getSenha(), usuario.getCredenciais().getSenha(), usuario.getPis());
         mv.addObject("cabecalho", "Atualizar cadastro");
         mv.addObject("titulo", "Editar dados do perfil");
         mv.addObject("credenciaisDoUsuario", credenciaisDoUsuario);

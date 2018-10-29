@@ -32,13 +32,13 @@
                                         </div>
                                         <input type="text" 
                                                class="form-control" id="username" name="username"
-                                               placeholder="Informe o usuário" required>
+                                               placeholder="Informe o usuário" autocomplete="off" required>
                                             <div class="invalid-feedback">Usuário é obrigatório.</div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="inputSenha">Senha</label>
-                                    <div class="input-group">
+                                    <div class="input-group" id="show_hide_password">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"> <i class="fa fa-lock fa"
                                                                                aria-hidden="true"></i>
@@ -47,6 +47,9 @@
                                         <input type="password" class="form-control" id="password"
                                                name="password" placeholder="Informe a senha"
                                                required>
+                                            <div class="input-group-append" onclick="showHidePassword('password', 'icone')">
+                                                <span class="input-group-text"> <a href="#"><i id="icone" class="fa fa-eye-slash" aria-hidden="true"></i></a></span>
+                                            </div>
                                             <div class="invalid-feedback">Senha é obrigatório.</div>
                                     </div>
                                 </div>

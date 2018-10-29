@@ -10,7 +10,7 @@ and open the template in the editor.
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
       layout:decorate="~{layouts/layout}">
 
-    <body>
+    <body class="background-default">
 
         <div layout:fragment="header">
             <div class="jumbotron shadow default-color" style="padding: 1rem 3rem" sec:authorize="not isAuthenticated()">
@@ -56,8 +56,25 @@ and open the template in the editor.
                                 <div class="col-md-6" th:class="*{id} ? esconder : col-md-6">
                                     <div class="form-group">
                                         <label for="senha">Senha:</label>
-                                        <input class="form-control" id="senha" th:classappend="${not #lists.isEmpty(#fields.errors('senha'))} ? is-invalid" name="senha" autocomplete="senha atual" type="password" th:value="*{senha}"/>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}">preencher a senha</div>
+                                        <div class="input-group" id="show_hide_password">
+                                            <input class="form-control" id="senha" th:classappend="${not #lists.isEmpty(#fields.errors('senha'))} ? is-invalid" name="senha" autocomplete="senha atual" type="password" th:value="*{senha}"/>
+                                            <div class="input-group-append" onclick="showHidePassword('senha', 'iconeSenha')">
+                                                <span class="input-group-text"> <a href="#"><i id="iconeSenha" class="fa fa-eye-slash" aria-hidden="true"></i></a></span>
+                                            </div>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}">preencher a senha</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" th:class="*{id} ? esconder : col-md-6">
+                                    <div class="form-group">
+                                        <label for="senha">Confirmação da senha:</label>
+                                        <div class="input-group">
+                                            <input class="form-control" id="confirmacaoSenha" th:classappend="${not #lists.isEmpty(#fields.errors('confirmacaoSenha'))} ? is-invalid" name="confirmacaoSenha" autocomplete="senha atual" type="password" th:value="*{confirmacaoSenha}"/>
+                                            <div class="input-group-append" onclick="showHidePassword('confirmacaoSenha', 'iconeConfirmacaoSenha')">
+                                                <span class="input-group-text"> <a href="#"><i id="iconeConfirmacaoSenha" class="fa fa-eye-slash" aria-hidden="true"></i></a></span>
+                                            </div>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmacaoSenha')}" th:errors="*{confirmacaoSenha}">preencher a senha</div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -65,13 +82,6 @@ and open the template in the editor.
                                         <label for="pis">Pis:</label>
                                         <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('pis'))} ? is-invalid" id="pis" type="text" th:field="*{pis}"/>
                                         <div class="invalid-feedback" th:if="${#fields.hasErrors('pis')}" th:errors="*{pis}">preencher o pis</div>
-                                    </div>
-                                </div> 
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="nome">NSR:</label>
-                                        <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('nsr'))} ? is-invalid" name="nsr" id="nsr" type="text" th:field="*{nsr}"/>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('nsr')}" th:errors="*{nsr}">preencher o nsr</div>
                                     </div>
                                 </div>
                             </div>   

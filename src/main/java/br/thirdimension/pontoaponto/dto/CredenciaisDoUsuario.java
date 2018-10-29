@@ -6,7 +6,6 @@
 package br.thirdimension.pontoaponto.dto;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -25,24 +24,24 @@ public class CredenciaisDoUsuario {
     @NotEmpty(message = "Senha é obrigatório")
     private String senha;
     
+    @NotEmpty(message = "Confirmação da senha é obrigatório")
+    private String confirmacaoSenha;
+    
     @NotEmpty(message = "PIS é obrigatório")
     private String pis;
-    
-    @NotEmpty(message = "NSR é obrigatório")
-    private String nsr;
 
     public CredenciaisDoUsuario() {
         super();
     }
 
-    public CredenciaisDoUsuario(Integer id, @NotEmpty String nome, @NotEmpty String email, @NotEmpty String senha, @NotEmpty String pis, @NotEmpty String nsr) {
+    public CredenciaisDoUsuario(Integer id, @NotEmpty String nome, @NotEmpty String email, @NotEmpty String senha, @NotEmpty String confirmacaoSenha, @NotEmpty String pis) {
         super();
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
+        this.confirmacaoSenha = confirmacaoSenha;
         this.pis = pis;
-        this.nsr = nsr;
     }
 
     public Integer getId() {
@@ -79,6 +78,15 @@ public class CredenciaisDoUsuario {
         this.senha = senha;
     }
 
+    public String getConfirmacaoSenha() {
+        return confirmacaoSenha;
+    }
+
+    public void setConfirmacaoSenha(String confirmacaoSenha) {
+        this.confirmacaoSenha = confirmacaoSenha;
+    }
+    
+
     public String getPis() {
         return pis;
     }
@@ -86,15 +94,4 @@ public class CredenciaisDoUsuario {
     public void setPis(String pis) {
         this.pis = pis;
     }
-
-    public String getNsr() {
-        return nsr;
-    }
-
-    public void setNsr(String nsr) {
-        this.nsr = nsr;
-    }
-    
-    
-
 }

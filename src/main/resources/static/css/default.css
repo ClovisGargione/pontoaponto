@@ -9,13 +9,27 @@ html, body{
 
 .background-image {
     position:absolute;
+    overflow: auto;
+    display: table;
     width:100%; 
-    background-image: url("../time.jpg") !important;
+    background-image: url("../imagens/time.jpg") !important;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
     height: 100%;
 }
+
+.background-default{
+    position:absolute;
+    display: table;
+    overflow: auto;
+    width:100%; 
+    background-image: url("../imagens/background.jpg") !important;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
+} 
 
 .login-transparente{
     opacity: 0.9;
@@ -39,4 +53,44 @@ html, body{
 
 .esconder{
     display: none;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 2px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #e9ecef; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
+.horas_trabalhadas{
+    color: rgba(54, 162, 235, 1);
+    font-weight: bold;
+}
+
+.horas_restantes{
+    color: rgba(255, 191, 0, 1);
+    font-weight: bold;
+}
+
+.horas_extras{
+    color: rgba(4, 180, 49, 1);
+    font-weight: bold;
+}
+
+.fim_jornada{
+    color: rgba(11, 56, 97, 1);
+    font-weight: bold;
 }

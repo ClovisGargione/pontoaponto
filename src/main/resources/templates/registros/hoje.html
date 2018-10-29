@@ -1,0 +1,98 @@
+<html layout:decorate="~{layouts/layout}">
+    <head>
+        <script type="text/javascript" th:inline="javascript">
+            $(document).ready(function () {
+            var ctx = document.getElementById("myChart").getContext('2d');
+            var myChart = new Chart(ctx, {
+            type: 'doughnut',
+                    data: {
+                        labels: [[${graficoParametros.labels}]],
+                        datasets: [{
+                            label: [[${graficoParametros.datasetsLabel}]],
+                            data: [[${graficoParametros.datasetsData}]],
+                            backgroundColor: [[${graficoParametros.dataBackgroundColor}]],
+                            borderColor: [[${graficoParametros.dataBorderColor}]],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        cutoutPercentage: 50,
+                        circumference: Math.PI,
+                        rotation: - Math.PI,
+                        responsive: false,
+                        tooltips: {
+                            callbacks: {
+                                title: function(tooltipItem, data) {
+                                return data['labels'][tooltipItem[0]['index']];
+                                },
+                                label: function(tooltipItem, data) {
+                                    var tempo = data['datasets'][0]['data'][tooltipItem['index']];
+                                    var hora = Math.floor(tempo/60);
+                                    var minutos = tempo % 60;
+                                    if (hora   < 10) {hora   = "0"+hora;}
+                                    if (minutos < 10) {minutos = "0"+minutos;}
+                                    return data['labels'][tooltipItem['index']] + ": "+ hora+":"+minutos;
+                                },
+                                afterLabel: function(tooltipItem, data) {
+                                        var dataset = data['datasets'][0];
+                                        var percent = Math.round((dataset['data'][tooltipItem['index']] / dataset["_meta"][0]['total']) * 100)
+                                        return 'Total: ' + '(' + percent + '%)';
+                                }
+                            }
+                        }
+                    }
+            });
+            });
+        </script>
+    </head>
+    <body class="background-default">
+        <div layout:fragment="header">
+            <br/>
+        </div>
+        <div layout:fragment="content" class="container">
+
+            <div class="card shadow">
+                <h4 class="card-header">
+                    <i class="fa fa-clock-o"></i>  <span>Registros de hoje</span>
+                </h4>
+                <div class="card-block padding-card">
+                    <h5 class="card-title">Registros de ponto registrados na data atual</h5>
+                    <div class="row">
+                        <div class="col-4">
+                            <table class="table table-sm">
+                                <thead class="text-center">
+                                    <tr>
+                                        <th scope="col">Hora</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr th:each="registro, iterationStatus : ${registros}">
+                                        <td th:utext="${registro.dataHoraFormatada}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-8 d-flex justify-content-center">
+                            <canvas id="myChart" style="width: 50%;height: auto;"></canvas>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row jumbotron" style="padding: 10px; margin-bottom:0; margin-top: 5px">
+                        <div class="col-4">
+                            <label>Horas trabalhadas:</label>
+                            <label class="horas_trabalhadas" th:text="${diaDeTrabalho.tempoTralhado}"></label>
+                        </div>
+                        <div class="col-4">
+                            <label th:text="${tempoRestanteExtra}"></label>
+                            <label th:class="${diaDeTrabalho.extra} ? horas_extras : horas_restantes" style="font-weight: bold" th:text="${diaDeTrabalho.tempoFaltanteExtra}"></label>
+                        </div>
+                        <div class="col-4">
+                            <label>Fim da jornada de trabalho:</label>
+                            <label class="fim_jornada" th:text="${diaDeTrabalho.horaSaida}"></label>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </div>
+    </body>
+</html>

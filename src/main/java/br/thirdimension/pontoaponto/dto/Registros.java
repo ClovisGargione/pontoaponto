@@ -5,28 +5,84 @@
  */
 package br.thirdimension.pontoaponto.dto;
 
+import java.util.Date;
+
 /**
  *
  * @author clovis.rodrigues
  */
-public class Registros {
+public class Registros implements Comparable<Registros>{
 
-    private String valor;
 
-    public Registros(String valor) {
+    private String dataHoraRegistro;
+    
+    private String pis;
+    
+    private String nsr;
+    
+    private Date dataHora;
+    
+    private String dataHoraFormatada;
 
-        this.valor = valor;
+    public Registros(String dataHoraRegistro, String PIS, String NSR, Date dataHora, String dataHoraFormatada) {
+        this.dataHoraRegistro = dataHoraRegistro;
+        this.pis = PIS;
+        this.nsr = NSR;
+        this.dataHora = dataHora;
+        this.dataHoraFormatada = dataHoraFormatada;
     }
+
+    
 
     public Registros() {
+        
     }
 
-    public String getValor() {
-        return valor;
+    public String getDataHoraRegistro() {
+        return dataHoraRegistro;
     }
 
-    public void setValor(String valor) {
-        this.valor = valor;
+    public void setDataHoraRegistro(String dataHoraRegistro) {
+        this.dataHoraRegistro = dataHoraRegistro;
     }
 
+    public String getPis() {
+        return pis;
+    }
+
+    public void setPis(String PIS) {
+        this.pis = PIS;
+    }
+
+    public String getNsr() {
+        return nsr;
+    }
+
+    public void setNsr(String NSR) {
+        this.nsr = NSR;
+    }
+
+    public Date getDataHora() {
+        return dataHora;
+    }
+
+    public void setDataHora(Date dataHora) {
+        this.dataHora = dataHora;
+    }
+
+    public String getDataHoraFormatada() {
+        return dataHoraFormatada;
+    }
+
+    public void setDataHoraFormatada(String dataHoraFormatada) {
+        this.dataHoraFormatada = dataHoraFormatada;
+    }
+
+    @Override
+    public int compareTo(Registros o) {
+        return getDataHora().compareTo(o.getDataHora());
+    }
+
+    
+    
 }

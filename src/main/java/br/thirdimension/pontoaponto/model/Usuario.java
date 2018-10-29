@@ -28,20 +28,17 @@ public class Usuario {
     private Credenciais credenciais;
     
     private String pis;
-    
-    private String nsr;
-	
+    	
     public Usuario() {
 
     }
 	
-    public Usuario(Integer id, String nome, Credenciais credenciais, String pis, String nsr) {
+    public Usuario(Integer id, String nome, Credenciais credenciais, String pis) {
             super();
             this.id = id;
             this.nome = nome;
             this.credenciais = credenciais;
             this.pis = pis;
-            this.nsr = nsr;
     }
 
     public Integer getId() {
@@ -74,15 +71,5 @@ public class Usuario {
 
     public void setPis(String pis) {
         this.pis = pis;
-    }
-
-    public String getNsr() {
-        return nsr;
-    }
-
-    public void setNsr(String nsr) {
-        this.nsr = nsr;
-    }
-    
-    
+    }   
 }

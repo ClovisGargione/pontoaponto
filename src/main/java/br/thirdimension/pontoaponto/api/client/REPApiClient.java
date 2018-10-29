@@ -8,7 +8,10 @@ package br.thirdimension.pontoaponto.api.client;
 import br.thirdimension.pontoaponto.dto.Registros;
 import br.thirdimension.pontoaponto.exception.REPException;
 import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,8 +56,17 @@ public class REPApiClient {
 
     private List<Registros> listaFromArray(Registros[] registros) {
         List<Registros> lista = new ArrayList<>();
-
+        SimpleDateFormat format = null;
         for (Registros registro : registros) {
+            format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            try {
+               Date data = new Date(format.parse(registro.getDataHoraRegistro()).getTime());
+                registro.setDataHora(data);
+            } catch (ParseException ex) {
+                Logger.getLogger(REPApiClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            registro.setDataHoraFormatada(format.format(registro.getDataHora()));
             lista.add(registro);
         }
 
