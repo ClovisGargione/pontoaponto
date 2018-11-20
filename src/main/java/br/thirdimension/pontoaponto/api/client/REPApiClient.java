@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -49,7 +48,7 @@ public class REPApiClient {
             } else {
                 throw new RuntimeException("sem sucesso");
             }
-        } catch (HttpClientErrorException e) {
+        } catch (Exception c) {
             throw new REPException("não foi possível obter os registros de ponto do REP!");
         }
     }

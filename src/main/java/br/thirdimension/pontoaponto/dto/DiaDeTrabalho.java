@@ -5,13 +5,16 @@
  */
 package br.thirdimension.pontoaponto.dto;
 
+import org.springframework.stereotype.Component;
+
 /**
  *
  * @author clovis.rodrigues
  */
+@Component
 public class DiaDeTrabalho {
     
-    private String tempoTralhado;
+    private String tempoTrabalhado;
     
     private String tempoFaltanteExtra;
     
@@ -22,25 +25,31 @@ public class DiaDeTrabalho {
     private int tempoTrabalhadoEmMinutos;
     
     private int tempoFaltanteExtraEmMinutos;
+    
+    private String labelExtrasNegativas;
+    
+    private String jornadaDeTrabalho;
 
     public DiaDeTrabalho() {
     }
 
-    public DiaDeTrabalho(String tempoTralhado, String tempoFaltanteExtra, String horaSaida, boolean extra, int tempoTrabalhadoEmMinutos, int tempoFaltanteExtraEmMinutos) {
-        this.tempoTralhado = tempoTralhado;
+    public DiaDeTrabalho(String tempoTralhado, String tempoFaltanteExtra, String horaSaida, boolean extra, int tempoTrabalhadoEmMinutos, int tempoFaltanteExtraEmMinutos, String labelExtrasNegativas, String jornadaDeTrabalho) {
+        this.tempoTrabalhado = tempoTralhado;
         this.tempoFaltanteExtra = tempoFaltanteExtra;
         this.horaSaida = horaSaida;
         this.extra = extra;
         this.tempoTrabalhadoEmMinutos = tempoTrabalhadoEmMinutos;
         this.tempoFaltanteExtraEmMinutos = tempoFaltanteExtraEmMinutos;
+        this.labelExtrasNegativas = labelExtrasNegativas;
+        this.jornadaDeTrabalho = jornadaDeTrabalho;
     }
     
-    public String getTempoTralhado() {
-        return tempoTralhado;
+    public String getTempoTrabalhado() {
+        return tempoTrabalhado;
     }
 
-    public void setTempoTralhado(String tempoTralhado) {
-        this.tempoTralhado = tempoTralhado;
+    public void setTempoTrabalhado(String tempoTralhado) {
+        this.tempoTrabalhado = tempoTralhado;
     }
 
     public String getTempoFaltanteExtra() {
@@ -82,7 +91,21 @@ public class DiaDeTrabalho {
     public void setTempoFaltanteExtraEmMinutos(int tempoFaltanteExtraEmMinutos) {
         this.tempoFaltanteExtraEmMinutos = tempoFaltanteExtraEmMinutos;
     }
-    
-    
+
+    public String getLabelExtrasNegativas() {
+        return labelExtrasNegativas;
+    }
+
+    public void setLabelExtrasNegativas(String labelExtrasNegativas) {
+        this.labelExtrasNegativas = labelExtrasNegativas;
+    }
+
+    public String getJornadaDeTrabalho() {
+        return jornadaDeTrabalho;
+    }
+
+    public void setJornadaDeTrabalho(String jornadaDeTrabalho) {
+        this.jornadaDeTrabalho = jornadaDeTrabalho;
+    }
     
 }

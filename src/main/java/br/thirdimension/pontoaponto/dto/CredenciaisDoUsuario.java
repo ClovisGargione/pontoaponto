@@ -5,7 +5,10 @@
  */
 package br.thirdimension.pontoaponto.dto;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -29,12 +32,22 @@ public class CredenciaisDoUsuario {
     
     @NotEmpty(message = "PIS é obrigatório")
     private String pis;
+    
+    @NotNull(message = "Jornada de trabalho é obrigatório")
+    @Min(value = 1, message = "Horas devem ser superior a um")
+    @Max(value = 23, message = "Horas devem ser inferior a vinte e vinte e três")
+    private int horas;
+    
+    @NotNull(message = "Jornada de trabalho é obrigatório")
+    @Min(value = 0, message = "Minutos devem ser superior a zero")
+    @Max(value = 59, message = "Minutos devem ser inferior a cinquenta e nove")
+    private int minutos;
 
     public CredenciaisDoUsuario() {
         super();
     }
 
-    public CredenciaisDoUsuario(Integer id, @NotEmpty String nome, @NotEmpty String email, @NotEmpty String senha, @NotEmpty String confirmacaoSenha, @NotEmpty String pis) {
+    public CredenciaisDoUsuario(Integer id, @NotEmpty String nome, @NotEmpty String email, @NotEmpty String senha, @NotEmpty String confirmacaoSenha, @NotEmpty String pis, @NotEmpty int horas, @NotEmpty int minutos) {
         super();
         this.id = id;
         this.nome = nome;
@@ -42,6 +55,8 @@ public class CredenciaisDoUsuario {
         this.senha = senha;
         this.confirmacaoSenha = confirmacaoSenha;
         this.pis = pis;
+        this.horas = horas;
+        this.minutos = minutos;
     }
 
     public Integer getId() {
@@ -94,4 +109,21 @@ public class CredenciaisDoUsuario {
     public void setPis(String pis) {
         this.pis = pis;
     }
+
+    public int getHoras() {
+        return horas;
+    }
+
+    public void setHoras(int horas) {
+        this.horas = horas;
+    }
+
+    public int getMinutos() {
+        return minutos;
+    }
+
+    public void setMinutos(int minutos) {
+        this.minutos = minutos;
+    }
+    
 }

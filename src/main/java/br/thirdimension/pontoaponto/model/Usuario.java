@@ -28,17 +28,20 @@ public class Usuario {
     private Credenciais credenciais;
     
     private String pis;
+    
+    private int jornadaDeTrabalhoEmMinutos;
     	
     public Usuario() {
 
     }
 	
-    public Usuario(Integer id, String nome, Credenciais credenciais, String pis) {
+    public Usuario(Integer id, String nome, Credenciais credenciais, String pis, int jornadaDeTrabalhoEmMinutos) {
             super();
             this.id = id;
             this.nome = nome;
             this.credenciais = credenciais;
             this.pis = pis;
+            this.jornadaDeTrabalhoEmMinutos = jornadaDeTrabalhoEmMinutos;
     }
 
     public Integer getId() {
@@ -72,4 +75,12 @@ public class Usuario {
     public void setPis(String pis) {
         this.pis = pis;
     }   
+
+    public int getJornadaDeTrabalhoEmMinutos() {
+        return jornadaDeTrabalhoEmMinutos;
+    }
+
+    public void setJornadaDeTrabalhoEmMinutos(int jornadaDeTrabalhoEmMinutos) {
+        this.jornadaDeTrabalhoEmMinutos = jornadaDeTrabalhoEmMinutos;
+    }
 }

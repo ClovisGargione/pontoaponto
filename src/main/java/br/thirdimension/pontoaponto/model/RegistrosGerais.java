@@ -27,13 +27,13 @@ public class RegistrosGerais {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataHoraRegistro;
     
-    private String PIS;
+    private String pis;
     
-    private String NSR;
+    private int NSR;
 
-    public RegistrosGerais(Date dataHoraRegistro, String PIS, String NSR) {
+    public RegistrosGerais(Date dataHoraRegistro, String pis, int NSR) {
         this.dataHoraRegistro = dataHoraRegistro;
-        this.PIS = PIS;
+        this.pis = pis;
         this.NSR = NSR;
     }
 
@@ -56,22 +56,19 @@ public class RegistrosGerais {
         this.dataHoraRegistro = dataHoraRegistro;
     }
 
-    public String getPIS() {
-        return PIS;
+    public String getPis() {
+        return pis;
     }
 
-    public void setPIS(String PIS) {
-        this.PIS = PIS;
+    public void setPis(String pis) {
+        this.pis = pis;
     }
 
-    public String getNSR() {
+    public int getNSR() {
         return NSR;
     }
 
-    public void setNSR(String NSR) {
+    public void setNSR(int NSR) {
         this.NSR = NSR;
     }
-    
-    
-    
 }

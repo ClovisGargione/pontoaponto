@@ -1,45 +1,48 @@
 <html layout:decorate="~{layouts/layout}">
     <head>
+        <link rel="stylesheet" href="/css/tempusdominus-bootstrap-4.min.css" />
+        <script type="text/javascript" src="/js/tempusdominus-bootstrap-4.min.js"></script>
+        <script type="text/javascript" src="/js/hoje.js"></script>
         <script type="text/javascript" th:inline="javascript">
             $(document).ready(function () {
             var ctx = document.getElementById("myChart").getContext('2d');
             var myChart = new Chart(ctx, {
             type: 'doughnut',
                     data: {
-                        labels: [[${graficoParametros.labels}]],
-                        datasets: [{
+                    labels: [[${graficoParametros.labels}]],
+                            datasets: [{
                             label: [[${graficoParametros.datasetsLabel}]],
-                            data: [[${graficoParametros.datasetsData}]],
-                            backgroundColor: [[${graficoParametros.dataBackgroundColor}]],
-                            borderColor: [[${graficoParametros.dataBorderColor}]],
-                            borderWidth: 1
-                        }]
+                                    data: [[${graficoParametros.datasetsData}]],
+                                    backgroundColor: [[${graficoParametros.dataBackgroundColor}]],
+                                    borderColor: [[${graficoParametros.dataBorderColor}]],
+                                    borderWidth: 1
+                            }]
                     },
                     options: {
-                        cutoutPercentage: 50,
-                        circumference: Math.PI,
-                        rotation: - Math.PI,
-                        responsive: false,
-                        tooltips: {
+                    cutoutPercentage: 50,
+                            circumference: Math.PI,
+                            rotation: - Math.PI,
+                            responsive: false,
+                            tooltips: {
                             callbacks: {
-                                title: function(tooltipItem, data) {
-                                return data['labels'][tooltipItem[0]['index']];
-                                },
-                                label: function(tooltipItem, data) {
+                            title: function(tooltipItem, data) {
+                            return data['labels'][tooltipItem[0]['index']];
+                            },
+                                    label: function(tooltipItem, data) {
                                     var tempo = data['datasets'][0]['data'][tooltipItem['index']];
-                                    var hora = Math.floor(tempo/60);
+                                    var hora = Math.floor(tempo / 60);
                                     var minutos = tempo % 60;
-                                    if (hora   < 10) {hora   = "0"+hora;}
-                                    if (minutos < 10) {minutos = "0"+minutos;}
-                                    return data['labels'][tooltipItem['index']] + ": "+ hora+":"+minutos;
-                                },
-                                afterLabel: function(tooltipItem, data) {
-                                        var dataset = data['datasets'][0];
-                                        var percent = Math.round((dataset['data'][tooltipItem['index']] / dataset["_meta"][0]['total']) * 100)
-                                        return 'Total: ' + '(' + percent + '%)';
-                                }
+                                    if (hora < 10) {hora = "0" + hora; }
+                                    if (minutos < 10) {minutos = "0" + minutos; }
+                                    return data['labels'][tooltipItem['index']] + ": " + hora + ":" + minutos;
+                                    },
+                                    afterLabel: function(tooltipItem, data) {
+                                    var dataset = data['datasets'][0];
+                                    var percent = Math.round((dataset['data'][tooltipItem['index']] / dataset["_meta"][0]['total']) * 100)
+                                            return 'Total: ' + '(' + percent + '%)';
+                                    }
                             }
-                        }
+                            }
                     }
             });
             });
@@ -50,14 +53,22 @@
             <br/>
         </div>
         <div layout:fragment="content" class="container">
-
+            <div class="card shadow">
+                <div class="card-block padding-card-button">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#registroManualModal"><i class="fa fa-hand-pointer-o"></i> Registro manual</button>
+                </div>
+            </div>
+            <br>
             <div class="card shadow">
                 <h4 class="card-header">
                     <i class="fa fa-clock-o"></i>  <span>Registros de hoje</span>
                 </h4>
                 <div class="card-block padding-card">
-                    <h5 class="card-title">Registros de ponto registrados na data atual</h5>
-                    <div class="row">
+                    <span class="row">
+                        <h5 class="col-6 card-title">Registros de ponto na data atual</h5>
+                        <small class="col-6 card-title d-flex justify-content-end text-muted" th:utext="${diaDeTrabalho.jornadaDeTrabalho}"></small>
+                    </span>
+                    <div class="row" id="listaRegistros" th:fragment="listaRegistros">
                         <div class="col-4">
                             <table class="table table-sm">
                                 <thead class="text-center">
@@ -73,17 +84,17 @@
                             </table>
                         </div>
                         <div class="col-8 d-flex justify-content-center">
-                            <canvas id="myChart" style="width: 50%;height: auto;"></canvas>
+                            <canvas id="myChart" style="width: 50%; height: auto;"></canvas>
                         </div>
                     </div>
                     <hr>
                     <div class="row jumbotron" style="padding: 10px; margin-bottom:0; margin-top: 5px">
                         <div class="col-4">
                             <label>Horas trabalhadas:</label>
-                            <label class="horas_trabalhadas" th:text="${diaDeTrabalho.tempoTralhado}"></label>
+                            <label class="horas_trabalhadas" th:text="${diaDeTrabalho.tempoTrabalhado}"></label>
                         </div>
                         <div class="col-4">
-                            <label th:text="${tempoRestanteExtra}"></label>
+                            <label th:text="${diaDeTrabalho.labelExtrasNegativas}"></label>
                             <label th:class="${diaDeTrabalho.extra} ? horas_extras : horas_restantes" style="font-weight: bold" th:text="${diaDeTrabalho.tempoFaltanteExtra}"></label>
                         </div>
                         <div class="col-4">
@@ -92,6 +103,33 @@
                         </div>
                     </div>
                 </div>    
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="registroManualModal" tabindex="-1" role="dialog" aria-labelledby="registroModal" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="titulo"><i class="fa fa-pencil" aria-hidden="true"></i> Registro manual</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <div class="input-group date" id="horaRegistroManual" data-target-input="nearest">
+                                    <input type="text" id="registro" class="form-control datetimepicker-input" data-target="#horaRegistroManual"/>
+                                    <div class="input-group-append" data-target="#horaRegistroManual" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-clock-o"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal"><i class="fa fa-window-close" aria-hidden="true"></i> Fechar</button>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="inserirRegistro('registro')"><i class="fa fa-save" aria-hidden="true"></i> Registrar</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </body>

@@ -18,13 +18,13 @@ public class Registros implements Comparable<Registros>{
     
     private String pis;
     
-    private String nsr;
+    private int nsr;
     
     private Date dataHora;
     
     private String dataHoraFormatada;
 
-    public Registros(String dataHoraRegistro, String PIS, String NSR, Date dataHora, String dataHoraFormatada) {
+    public Registros(String dataHoraRegistro, String PIS, int NSR, Date dataHora, String dataHoraFormatada) {
         this.dataHoraRegistro = dataHoraRegistro;
         this.pis = PIS;
         this.nsr = NSR;
@@ -32,6 +32,13 @@ public class Registros implements Comparable<Registros>{
         this.dataHoraFormatada = dataHoraFormatada;
     }
 
+    public Registros(String PIS, Date dataHora) {
+        this.dataHoraRegistro = "";
+        this.pis = PIS;
+        this.nsr = 0;
+        this.dataHora = dataHora;
+        this.dataHoraFormatada = "";
+    }
     
 
     public Registros() {
@@ -54,11 +61,11 @@ public class Registros implements Comparable<Registros>{
         this.pis = PIS;
     }
 
-    public String getNsr() {
+    public int getNsr() {
         return nsr;
     }
 
-    public void setNsr(String NSR) {
+    public void setNsr(int NSR) {
         this.nsr = NSR;
     }
 

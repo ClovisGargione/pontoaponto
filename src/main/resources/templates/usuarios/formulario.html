@@ -79,6 +79,27 @@ and open the template in the editor.
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
+                                        <label for="pis">Jornada de trabalho</label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <span class="align-items-center h-100 flex">
+                                                    <small for="horas">Horas:</small>
+                                                    <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('horas'))} ? is-invalid" id="horas" min="1" max="23" type="number" th:field="*{horas}"/>
+                                                </span>
+                                                <div class="invalid-feedback" th:if="${#fields.hasErrors('horas')}" th:errors="*{horas}">preencher a hora</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <span class="align-items-center h-100 flex">
+                                                    <small for="minutos">Minutos:</small>
+                                                    <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('minutos'))} ? is-invalid" id="minutos" min="0" max="59" type="number" th:field="*{minutos}"/>
+                                                </span>
+                                                <div class="invalid-feedback" th:if="${#fields.hasErrors('minutos')}" th:errors="*{horas}">preencher os minutos</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
                                         <label for="pis">Pis:</label>
                                         <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('pis'))} ? is-invalid" id="pis" type="text" th:field="*{pis}"/>
                                         <div class="invalid-feedback" th:if="${#fields.hasErrors('pis')}" th:errors="*{pis}">preencher o pis</div>

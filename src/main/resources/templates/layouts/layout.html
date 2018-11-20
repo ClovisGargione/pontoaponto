@@ -15,29 +15,36 @@ Spring Boot, dentro de src/main/resource/templates. -->
         <meta http-equiv="X-UA-Compatible" content="IE=9">
         <meta http-equiv="X-UA-Compatible" content="IE=10">
         <meta http-equiv="X-UA-Compatible" content="IE=11">
-         <link rel="stylesheet" href="/css/default.css" type="text/css">
+        <link rel="stylesheet" href="/css/default.css" type="text/css">
         <!-- Bootstrap -->
         <link rel="stylesheet"
               href="/webjars/bootstrap/4.0.0/css/bootstrap.min.css">
-        <!-- jquery-ui -->
-        <link rel="stylesheet"
-              href="/webjars/jquery-ui/1.9.2/css/smoothness/jquery-ui-1.9.2.custom.css">
             
         <link rel="stylesheet"
               href="/webjars/font-awesome/4.7.0/css/font-awesome.css">
-            
+        <!-- jquery-ui -->
+        <link rel="stylesheet"
+              href="/webjars/jquery-ui/1.9.2/css/smoothness/jquery-ui-1.9.2.custom.css">
+        <!-- Toastr -->
+        <link rel="stylesheet" href="/webjars/toastr/2.1.2/build/toastr.min.css" type="text/css">
         <script src="/webjars/chartjs/2.7.3/Chart.bundle.min.js"></script>
         <!-- jquery -->
         <script src="/js/jquery.min.js"></script>
         <script src="/js/login.js"></script>
+        <script src="/js/navbar.js"></script>
         <script src="/webjars/jquery-ui/1.9.2/js/jquery-ui-1.9.2.custom.min.js"></script>
         <!-- Bootstrap -->
         <script src="/webjars/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
-         
+        <!-- Moment -->
+        <script src="/webjars/momentjs/2.22.2/min/moment-with-locales.min.js"></script>
+        <!-- Toastr -->
+        <script src="/webjars/toastr/2.1.2/build/toastr.min.js"></script>
         <title>Ponto a ponto</title>
     </head>
     <body>
         <div sec:authorize="isAuthenticated()" th:include="/navbar/navbar"></div>
+        <div id="overlay"></div>
+        <div id="loader"></div>
         <div layout:fragment="header">cabeçalho falso</div>
         <div layout:fragment="content">content falso</div>
         <br>

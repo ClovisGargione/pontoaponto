@@ -5,18 +5,15 @@
  */
 package br.thirdimension.pontoaponto.controller;
 
-import br.thirdimension.pontoaponto.configuracao.ResourceOwner;
 import br.thirdimension.pontoaponto.dto.CredenciaisDoUsuario;
 import br.thirdimension.pontoaponto.dto.Senha;
 import br.thirdimension.pontoaponto.model.Credenciais;
 import br.thirdimension.pontoaponto.model.Usuario;
 import br.thirdimension.pontoaponto.repository.UsuarioRepository;
+import br.thirdimension.pontoaponto.uteis.UsuarioSessao;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -38,6 +35,9 @@ public class UsuariosController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+    
+    @Autowired
+    private UsuarioSessao sessao;
 
     /**
      * Tela de cadastro
@@ -57,7 +57,8 @@ public class UsuariosController {
     /**
      * Método que recebe os dados do formulário de cadastro de usuário
      *
-     * @param dadosDeRegistro
+     * @param credenciaisDoUsuario
+     * @param bindingResult
      * @return
      */
     @RequestMapping(method = RequestMethod.POST)
@@ -73,15 +74,15 @@ public class UsuariosController {
             mv.addObject("credenciaisDoUsuario", credenciaisDoUsuario);
             return mv;
         }
-
+        int jornadaDeTrabalhoEmMinutos = ((credenciaisDoUsuario.getHoras()*60) + credenciaisDoUsuario.getMinutos());
         //cria um usuario no sistema
-        Usuario usuario = new Usuario(credenciaisDoUsuario.getId(), credenciaisDoUsuario.getNome(), new Credenciais(credenciaisDoUsuario.getEmail(), credenciaisDoUsuario.getSenha()), credenciaisDoUsuario.getPis());
+        Usuario usuario = new Usuario(credenciaisDoUsuario.getId(), credenciaisDoUsuario.getNome(), new Credenciais(credenciaisDoUsuario.getEmail(), credenciaisDoUsuario.getSenha()), credenciaisDoUsuario.getPis(), jornadaDeTrabalhoEmMinutos);
 
         // persiste os dados do usuario
         usuarioRepository.save(usuario);
 
         // autentica o usuário recem-registrado para que o mesmo nao precise fazer o login
-        mantemUsuarioAutenticado(authenticationManager, usuario);
+        sessao.mantemUsuarioAutenticado(authenticationManager, usuario);
 
         // usuário cadastrado é redirecionado para página de controle de livros
         mv = new ModelAndView("redirect:/home");
@@ -92,8 +93,10 @@ public class UsuariosController {
     @RequestMapping(path = "/editar", method = RequestMethod.GET)
     public ModelAndView editar() {
         ModelAndView mv = new ModelAndView("usuarios/formulario");
-        Usuario usuario = getUsuarioLogado();
-        CredenciaisDoUsuario credenciaisDoUsuario = new CredenciaisDoUsuario(usuario.getId(), usuario.getNome(), usuario.getCredenciais().getEmail(), usuario.getCredenciais().getSenha(), usuario.getCredenciais().getSenha(), usuario.getPis());
+        Usuario usuario = sessao.getUsuario();
+        int horas = (int) (usuario.getJornadaDeTrabalhoEmMinutos() / 60);
+        int minutos = (int) (usuario.getJornadaDeTrabalhoEmMinutos() % 60); 
+        CredenciaisDoUsuario credenciaisDoUsuario = new CredenciaisDoUsuario(usuario.getId(), usuario.getNome(), usuario.getCredenciais().getEmail(), usuario.getCredenciais().getSenha(), usuario.getCredenciais().getSenha(), usuario.getPis(), horas, minutos);
         mv.addObject("cabecalho", "Atualizar cadastro");
         mv.addObject("titulo", "Editar dados do perfil");
         mv.addObject("credenciaisDoUsuario", credenciaisDoUsuario);
@@ -104,7 +107,7 @@ public class UsuariosController {
     public ModelAndView redefinirSenha() {
         ModelAndView mv = new ModelAndView("usuarios/senha");
         Senha senha = new Senha();
-        senha.setSenhaAntiga(getUsuarioLogado().getCredenciais().getSenha());
+        senha.setSenhaAntiga(sessao.getUsuario().getCredenciais().getSenha());
         mv.addObject("senha", senha);
         return mv;
     }
@@ -123,34 +126,13 @@ public class UsuariosController {
             return mv;
         }
         
-        Usuario usuario = getUsuarioLogado();
+        Usuario usuario = sessao.getUsuario();
         usuario.getCredenciais().setSenha(senha.getNovaSenha());
         usuarioRepository.save(usuario);
         // autentica o usuário recem-registrado para que o mesmo nao precise fazer o login
-        mantemUsuarioAutenticado(authenticationManager, usuario);
+        sessao.mantemUsuarioAutenticado(authenticationManager, usuario);
         mv = new ModelAndView("redirect:/home");
         return mv;
-    }
-
-    /**
-     * Esse método é usado apenas para adicionar o usuário recem cadastrado na
-     * sessão do Spring Security para que o usuário não precise se autenticar
-     * assim que se cadastra.
-     *
-     * @param authenticationManager
-     * @param usuario
-     */
-    private void mantemUsuarioAutenticado(AuthenticationManager authenticationManager, Usuario usuario) {
-        Authentication auth = new UsernamePasswordAuthenticationToken(
-                new ResourceOwner(usuario), usuario.getCredenciais().getSenha());
-        SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(auth));
-    }
-
-    private Usuario getUsuarioLogado() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        ResourceOwner resourceOwner = (ResourceOwner) auth.getPrincipal();
-        Usuario usuario = resourceOwner.getUsuario();
-        return usuario;
     }
 
 }
