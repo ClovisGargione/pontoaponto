@@ -17,8 +17,15 @@ and open the template in the editor.
                 <div class="card-block padding-card">
                     <span class="list-group-item list-group-item-action flex-column align-items-start" th:each="registro, iterationStatus : ${registros}">
                         <div class="d-flex w-100 justify-content-between">
-                            <label th:utext="${registro.dataHoraRegistro}"></label>
+                            <span class="link" data-toggle="tooltip" data-placement="top"
+                                  title="Registros do dia" style="display: flex"><h5
+                                    class="mb-1" th:utext="${registro.dataHoraFormatada}"></h5> <i
+                                    class="fa fa-clock-o pl-1 pt-1" aria-hidden="true"></i></span>
+                            <span style="display: block"> 
                         </div>
+                        <span th:each="hora, iterationStatus : ${registro.horaDoRegistro}">
+                            <small th:utext="${hora}" class="badge badge-primary"></small>
+                        </span>
                     </span>
                 </div>
             </div>

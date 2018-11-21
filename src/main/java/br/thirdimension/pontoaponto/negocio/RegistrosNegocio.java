@@ -82,7 +82,7 @@ public class RegistrosNegocio {
             diaDeTrabalho.setExtra(false);
             diaDeTrabalho.setLabelExtrasNegativas("Horas restantes: ");
             cal = definirHoraEncerramentoJornada(diferencaJornadaETotalTrabalhadoEmMinutos);
-            diaDeTrabalho.setHoraSaida(conversor.dataParaString(cal.getTime()));
+            diaDeTrabalho.setHoraSaida(conversor.dataParaStringHora(cal.getTime()));
         } else {
             diferencaJornadaETotalTrabalhadoEmMinutos = diaDeTrabalho.getTempoTrabalhadoEmMinutos() - sessao.getUsuario().getJornadaDeTrabalhoEmMinutos();
             diaDeTrabalho.setExtra(true);
@@ -93,7 +93,7 @@ public class RegistrosNegocio {
         Date data = conversor.definirHoraMinutoEmData(tempo[HORA], tempo[MINUTO]);
         int totalMinutos = conversor.converterHoraParaMinutos(tempo[HORA], tempo[MINUTO]); 
         diaDeTrabalho.setTempoFaltanteExtraEmMinutos(totalMinutos);
-        diaDeTrabalho.setTempoFaltanteExtra(conversor.dataParaString(data));
+        diaDeTrabalho.setTempoFaltanteExtra(conversor.dataParaStringHora(data));
         return diaDeTrabalho;
     }
 
@@ -195,10 +195,10 @@ public class RegistrosNegocio {
         Date data = conversor.definirHoraMinutoEmData(horaAjustada[HORA], horaAjustada[MINUTO]);
         int totalMinutos = conversor.converterHoraParaMinutos(horaAjustada[HORA], horaAjustada[MINUTO]); 
         diaDeTrabalho.setTempoTrabalhadoEmMinutos(totalMinutos);
-        diaDeTrabalho.setTempoTrabalhado(conversor.dataParaString(data));
+        diaDeTrabalho.setTempoTrabalhado(conversor.dataParaStringHora(data));
         int[] jornadaDeTrabalho = conversor.minutosParaHoraEminutos(sessao.getUsuario().getJornadaDeTrabalhoEmMinutos());
         Date jornadaDeTrabalhoData = conversor.definirHoraMinutoEmData(jornadaDeTrabalho[HORA], jornadaDeTrabalho[MINUTO]);
-        diaDeTrabalho.setJornadaDeTrabalho("Jornada de trabalho: " + conversor.dataParaString(jornadaDeTrabalhoData));
+        diaDeTrabalho.setJornadaDeTrabalho("Jornada de trabalho: " + conversor.dataParaStringHora(jornadaDeTrabalhoData));
         return diaDeTrabalho;
     }
     
@@ -220,7 +220,7 @@ public class RegistrosNegocio {
         List<RegistrosGerais> registrosGerais = registrosRepository.findAll();
         Date hoje = new Date();
         registrosGerais.stream().filter((gerais) -> (gerais.getPis().equals(usuario.getPis()) && gerais.getDataHoraRegistro().getDate() == hoje.getDate()&& gerais.getDataHoraRegistro().getMonth() == hoje.getMonth() && gerais.getDataHoraRegistro().getYear() == hoje.getYear())).forEachOrdered((gerais) -> {
-            listaRegistros.add(new Registros(conversor.dataParaString(gerais.getDataHoraRegistro()), gerais.getPis(), gerais.getNSR(), gerais.getDataHoraRegistro(), conversor.dataParaString(gerais.getDataHoraRegistro())));
+            listaRegistros.add(new Registros(conversor.dataParaStringHora(gerais.getDataHoraRegistro()), gerais.getPis(), gerais.getNSR(), gerais.getDataHoraRegistro(), conversor.dataParaStringHora(gerais.getDataHoraRegistro())));
         });
         Collections.sort(listaRegistros);
         return listaRegistros;

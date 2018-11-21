@@ -7,11 +7,13 @@ package br.thirdimension.pontoaponto.service;
 
 import br.thirdimension.pontoaponto.api.client.REPApiClient;
 import br.thirdimension.pontoaponto.controller.RegistrosController;
+import br.thirdimension.pontoaponto.dto.MeusRegistrosDto;
 import br.thirdimension.pontoaponto.dto.Registros;
 import br.thirdimension.pontoaponto.exception.REPException;
 import br.thirdimension.pontoaponto.model.RegistrosGerais;
 import br.thirdimension.pontoaponto.model.Usuario;
 import br.thirdimension.pontoaponto.repository.RegistrosRepository;
+import br.thirdimension.pontoaponto.uteis.Conversores;
 import br.thirdimension.pontoaponto.uteis.UsuarioSessao;
 import java.util.ArrayList;
 import java.util.Date;
@@ -74,5 +76,5 @@ public class RegistrosService {
         }
         return listaDeRegistros;
     }
-    
+        
 }

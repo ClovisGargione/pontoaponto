@@ -46,8 +46,14 @@ public class Conversores {
         return ((hora * 60) + minutos);
     }
     
-    public String dataParaString(Date data) {
+    public String dataParaStringHora(Date data) {
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        String dataString = format.format(data);
+        return dataString;
+    }
+    
+    public String dataParaString(Date data) {
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         String dataString = format.format(data);
         return dataString;
     }

@@ -5,7 +5,9 @@
  */
 package br.thirdimension.pontoaponto.controller;
 
+import br.thirdimension.pontoaponto.dto.MeusRegistrosDto;
 import br.thirdimension.pontoaponto.model.RegistrosGerais;
+import br.thirdimension.pontoaponto.negocio.MeusRegistrosNegocio;
 import br.thirdimension.pontoaponto.service.RegistrosService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +27,12 @@ public class MeusRegistros {
     private static final String MEUS_REGISTROS_URI = "registros/meus-registros";
     
     @Autowired
-    private RegistrosService registrosService;
+    private MeusRegistrosNegocio meusRegistrosNegocio;
     
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView hoje() {
         ModelAndView mv = new ModelAndView(MEUS_REGISTROS_URI);
-        List<RegistrosGerais> registrosGerais = registrosService.buscarListaDeRegistrosDoUsuario();
+        List<MeusRegistrosDto> registrosGerais = meusRegistrosNegocio.buscarListaDeRegistrosAgrupadaPorData();
         mv.addObject("registros", registrosGerais);
         return mv;
     }
