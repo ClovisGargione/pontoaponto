@@ -6,7 +6,7 @@
 package br.thirdimension.pontoaponto.repository;
 
 import br.thirdimension.pontoaponto.model.Usuario;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
  * @author clovis.rodrigues
  */
 @Repository
-public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
-    
+public interface UsuarioRepository extends PagingAndSortingRepository<Usuario, Long>{
     
 }

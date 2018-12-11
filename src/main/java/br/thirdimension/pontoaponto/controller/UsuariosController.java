@@ -11,6 +11,8 @@ import br.thirdimension.pontoaponto.model.Credenciais;
 import br.thirdimension.pontoaponto.model.Usuario;
 import br.thirdimension.pontoaponto.repository.UsuarioRepository;
 import br.thirdimension.pontoaponto.uteis.UsuarioSessao;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -74,9 +76,9 @@ public class UsuariosController {
             mv.addObject("credenciaisDoUsuario", credenciaisDoUsuario);
             return mv;
         }
-        int jornadaDeTrabalhoEmMinutos = ((credenciaisDoUsuario.getHoras()*60) + credenciaisDoUsuario.getMinutos());
+        LocalTime jornadaDeTrabalho = LocalTime.of(credenciaisDoUsuario.getHoras(), credenciaisDoUsuario.getMinutos());
         //cria um usuario no sistema
-        Usuario usuario = new Usuario(credenciaisDoUsuario.getId(), credenciaisDoUsuario.getNome(), new Credenciais(credenciaisDoUsuario.getEmail(), credenciaisDoUsuario.getSenha()), credenciaisDoUsuario.getPis(), jornadaDeTrabalhoEmMinutos);
+        Usuario usuario = new Usuario(credenciaisDoUsuario.getId(), credenciaisDoUsuario.getNome(), new Credenciais(credenciaisDoUsuario.getEmail(), credenciaisDoUsuario.getSenha()), credenciaisDoUsuario.getPis(), jornadaDeTrabalho, new ArrayList<>());
 
         // persiste os dados do usuario
         usuarioRepository.save(usuario);
@@ -94,8 +96,8 @@ public class UsuariosController {
     public ModelAndView editar() {
         ModelAndView mv = new ModelAndView("usuarios/formulario");
         Usuario usuario = sessao.getUsuario();
-        int horas = (int) (usuario.getJornadaDeTrabalhoEmMinutos() / 60);
-        int minutos = (int) (usuario.getJornadaDeTrabalhoEmMinutos() % 60); 
+        int horas = usuario.getJornadaDeTrabalho().getHour();
+        int minutos = usuario.getJornadaDeTrabalho().getMinute();
         CredenciaisDoUsuario credenciaisDoUsuario = new CredenciaisDoUsuario(usuario.getId(), usuario.getNome(), usuario.getCredenciais().getEmail(), usuario.getCredenciais().getSenha(), usuario.getCredenciais().getSenha(), usuario.getPis(), horas, minutos);
         mv.addObject("cabecalho", "Atualizar cadastro");
         mv.addObject("titulo", "Editar dados do perfil");

@@ -11,14 +11,16 @@ $(document).ready(function () {
             locale: 'pt-br'
         });
     });
-    
+
     $('#registroManualModal').on('hide.bs.modal', function (e) {
         limparCampoModal("registro");
     });
     //alterar para buscar valor em um endpoint atualizando o fragmento do html
-    setInterval(function(){ location.reload(); }, 300000);
+    setInterval(function () {
+        location.reload();
+    }, 300000);
 });
-function horaStringParaDataAtualHora(string){
+function horaStringParaDataAtualHora(string) {
     var hora = string.split(":");
     var data = new Date();
     data.setHours(hora[0]);
@@ -26,37 +28,74 @@ function horaStringParaDataAtualHora(string){
     return data;
 }
 
-function fecharModal(){
-    $('#registroManualModal').modal('hide');
+function fecharModal(idModal) {
+    $(idModal).modal('hide');
 }
 
-function limparCampoModal(inputId){
+function limparCampoModal(inputId) {
     var campo = document.getElementById(inputId);
     campo.value = "";
 }
 
-function inserirRegistro(inputId){
+function inserirRegistro(inputId) {
     var registro = document.getElementById(inputId).value;
-    var dataHoraRegistro = horaStringParaDataAtualHora(registro);
-    var opcoesToastr = {timeOut: 500, hideMethod: 'slideUp', showMethod: 'slideDown', preventDuplicates: true, showEasing: "swing", hideEasing: "linear", onHidden: function() { location.reload(); }};
+    //var dataHoraRegistro = horaStringParaDataAtualHora(registro);
+    var opcoesToastr = {timeOut: 500, hideMethod: 'slideUp', showMethod: 'slideDown', preventDuplicates: true, showEasing: "swing", hideEasing: "linear", onHidden: function () {
+            location.reload();
+        }};
     toastr.options = opcoesToastr;
     $.ajax({
-            type: "POST",
-            url: "/registros",
-            success: function (data) {
-                toastr.success("Registro adicionado com sucesso!");
-            },
-            error: function (response) {
-                    toastr.error("Ops.. não foi possível adicionar o registro!");
-            },
-            complete: function(){
-                fecharModal();
-            },
-            async: true,
-            contentType: 'application/json',
-            data: JSON.stringify(dataHoraRegistro),
-            cache: false,
-            processData: false,
-            timeout: 60000
+        type: "POST",
+        url: "/registros",
+        success: function (data) {
+            toastr.success("Registro adicionado com sucesso!");
+        },
+        error: function (response) {
+            toastr.error("Ops.. não foi possível adicionar o registro!");
+        },
+        complete: function () {
+            fecharModal('#registroManualModal');
+        },
+        async: true,
+        contentType: 'application/json',
+        data: registro,
+        cache: false,
+        processData: false,
+        timeout: 60000
     });
+
+}
+
+function deleteRegistro(registroId) {
+    var opcoesToastr = {timeOut: 500, hideMethod: 'slideUp', showMethod: 'slideDown', preventDuplicates: true, showEasing: "swing", hideEasing: "linear", onHidden: function () {
+            location.reload();
+        }};
+    toastr.options = opcoesToastr;
+    $.ajax({
+        type: "DELETE",
+        url: "/registros/remover/" + registroId,
+        success: function (data) {
+            toastr.success("Registro removido com sucesso!");
+        },
+        error: function (response) {
+            toastr.error("Ops.. não foi possível remover o registro!");
+        },
+        complete: function () {
+            fecharModal('#removerRegistroModal');
+        },
+        async: true,
+        cache: false,
+        processData: false,
+        timeout: 60000
+    });
+}
+var registro = {};
+function confirmarExclusaoDeRegistro(item) {
+    registro = JSON.parse(item);
+    $("#perguntaConfirmar").text("Deseja remover o registro " + registro.horaFormatada + " ?");
+    $('#removerRegistroModal').modal('show');
+}
+
+function removerRegistro() {
+    deleteRegistro(registro.id);
 }

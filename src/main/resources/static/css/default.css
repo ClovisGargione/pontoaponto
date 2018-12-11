@@ -161,3 +161,10 @@ html, body{
   from{ bottom:-100px; opacity:0 } 
   to{ bottom:0; opacity:1 }
 }
+
+.link-color{
+    color: #007bff !important;
+    text-decoration: none !important;
+    background-color: transparent !important;
+    -webkit-text-decoration-skip: objects;
+}

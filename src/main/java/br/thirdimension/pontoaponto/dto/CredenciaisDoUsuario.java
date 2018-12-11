@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
  */
 public class CredenciaisDoUsuario {
 
-    private Integer id;
+    private Long id;
     
     @NotEmpty(message = "Nome é obrigatório")
     private String nome;
@@ -47,7 +47,7 @@ public class CredenciaisDoUsuario {
         super();
     }
 
-    public CredenciaisDoUsuario(Integer id, @NotEmpty String nome, @NotEmpty String email, @NotEmpty String senha, @NotEmpty String confirmacaoSenha, @NotEmpty String pis, @NotEmpty int horas, @NotEmpty int minutos) {
+    public CredenciaisDoUsuario(Long id, @NotEmpty String nome, @NotEmpty String email, @NotEmpty String senha, @NotEmpty String confirmacaoSenha, @NotEmpty String pis, @NotEmpty int horas, @NotEmpty int minutos) {
         super();
         this.id = id;
         this.nome = nome;
@@ -59,11 +59,11 @@ public class CredenciaisDoUsuario {
         this.minutos = minutos;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
     

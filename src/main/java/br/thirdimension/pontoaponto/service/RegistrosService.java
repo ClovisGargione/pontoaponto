@@ -5,22 +5,21 @@
  */
 package br.thirdimension.pontoaponto.service;
 
-import br.thirdimension.pontoaponto.api.client.REPApiClient;
-import br.thirdimension.pontoaponto.controller.RegistrosController;
-import br.thirdimension.pontoaponto.dto.MeusRegistrosDto;
-import br.thirdimension.pontoaponto.dto.Registros;
-import br.thirdimension.pontoaponto.exception.REPException;
-import br.thirdimension.pontoaponto.model.RegistrosGerais;
+import br.thirdimension.pontoaponto.model.RegistroDia;
+import br.thirdimension.pontoaponto.model.Registros;
 import br.thirdimension.pontoaponto.model.Usuario;
+import br.thirdimension.pontoaponto.repository.RegistrosDiaRepository;
 import br.thirdimension.pontoaponto.repository.RegistrosRepository;
-import br.thirdimension.pontoaponto.uteis.Conversores;
+import br.thirdimension.pontoaponto.repository.UsuarioRepository;
 import br.thirdimension.pontoaponto.uteis.UsuarioSessao;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -35,46 +34,85 @@ public class RegistrosService {
     
     @Autowired
     private RegistrosRepository registrosRepository;
-        
+    
     @Autowired
-    private REPApiClient repApiClient;
+    private RegistrosDiaRepository registrosDiaRepository;
     
-    public List<Registros> buscarListaDeRegistrosREP() {
-        List<Registros> registros = new ArrayList<>();
-        try {
-            registros = repApiClient.registros();
-        } catch (REPException ex) {
-            Logger.getLogger(RegistrosController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return registros;
-    }
-    
-    public void importarRegistros(List<Registros> registrosREP) {
-        List<RegistrosGerais> registrosGerais = registrosRepository.findAll();
-        List<Integer> nsr = new ArrayList<>();
-        registrosGerais.forEach((gerais) -> {
-            nsr.add(gerais.getNSR());
-        });
-        registrosREP.stream().filter((registros) -> (!nsr.contains(registros.getNsr()))).forEachOrdered((registros) -> {
-            registrosRepository.save(new RegistrosGerais(registros.getDataHora(), registros.getPis(), registros.getNsr()));
-        });
-    }
-    
-    public RegistrosGerais inserirRegistroManual(Date data) throws Exception{
-        Usuario usuario = usuarioSessao.getUsuario();
-        RegistrosGerais registrosGerais = new RegistrosGerais(data, usuario.getPis(), 0);
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+        
+    public Registros inserirRegistroManual(LocalDate data) throws Exception{
+        Optional<Usuario> usuario = usuarioRepository.findById(usuarioSessao.getUsuario().getId());
+        Registros registrosGerais = new Registros(data, usuarioSessao.getUsuario());
+        usuario.get().getRegistros().add(registrosGerais);
         registrosRepository.save(registrosGerais);
         return registrosGerais;
     }
     
-    public List<RegistrosGerais> buscarListaDeRegistrosDoUsuario(){
-        List<RegistrosGerais> listaDeRegistros = new ArrayList<>();
+    public Registros inserirRegistroDiaManual(LocalTime hora) throws Exception{
+        Registros registrosGerais = registrosRepository.buscarUltimoRegistroInserido(LocalDate.now(), usuarioSessao.getUsuario());
+        registrosGerais.getRegistroDia().add(new RegistroDia(hora));
+        registrosRepository.save(registrosGerais);
+        return registrosGerais;
+    }
+    
+    public void removerRegistro(long id){
+        Optional<Registros> registrosGerais = registrosRepository.findById(id);
+        registrosRepository.delete(registrosGerais.get());
+    }
+    
+    public void removerRegistroDia(long id){
+        Optional<RegistroDia> registrosGerais = registrosDiaRepository.findById(id);
+        registrosDiaRepository.delete(registrosGerais.get());
+    }
+    
+    public Page<Registros> buscarListaDeRegistrosDoUsuario(Pageable pageable){
+        Page<Registros> listaDeRegistros = null;
         try{
-           listaDeRegistros = registrosRepository.findByPis(usuarioSessao.getUsuario().getPis());
+           listaDeRegistros = registrosRepository.findByUsuario(usuarioSessao.getUsuario(), pageable);
         }catch(Exception ex){
             Logger.getLogger(RegistrosService.class.getName()).log(Level.SEVERE, null, ex);
         }
         return listaDeRegistros;
     }
+    
+    public Page<Registros> buscarListaDeRegistrosEntreDatasPorUsuario(LocalDate dataInicial, LocalDate dataFinal, Pageable pageable){
+        Page<Registros> listaDeRegistros = null;
+        try {
+            listaDeRegistros = registrosRepository.listarRegistroEntreDatasPorUsuario(dataInicial, dataFinal, usuarioSessao.getUsuario(), pageable);
+        } catch (Exception ex) {
+            Logger.getLogger(RegistrosService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listaDeRegistros;
+    }
+    
+    public Page<Registros> buscarListaDeRegistrosApartirDaData(LocalDate dataInicial, Pageable pageable){
+        Page<Registros> listaDeRegistros = null;
+        try {
+            listaDeRegistros = registrosRepository.listarRegistrosApartirDaData(dataInicial, usuarioSessao.getUsuario(), pageable);
+        } catch (Exception ex) {
+            Logger.getLogger(RegistrosService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listaDeRegistros;
+    }
+    
+    public Page<Registros> buscarListaDeRegistrosAteAData(LocalDate dataFinal, Pageable pageable){
+        Page<Registros> listaDeRegistros = null;
+        try {
+            listaDeRegistros = registrosRepository.listarRegistrosAteAData(dataFinal, usuarioSessao.getUsuario(), pageable);
+        } catch (Exception ex) {
+            Logger.getLogger(RegistrosService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listaDeRegistros;
+    }
         
+    public Registros buscarUltimoRegistroInserido(Usuario usuario){
+        Registros registros = null;
+        try {
+            registros = registrosRepository.buscarUltimoRegistroInserido(LocalDate.now(), usuario);
+        } catch (Exception ex) {
+            Logger.getLogger(RegistrosService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return registros;      
+    }
 }

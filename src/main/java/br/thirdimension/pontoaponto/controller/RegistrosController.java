@@ -7,17 +7,19 @@ package br.thirdimension.pontoaponto.controller;
 
 import br.thirdimension.pontoaponto.dto.DiaDeTrabalho;
 import br.thirdimension.pontoaponto.dto.GraficoParametros;
-import br.thirdimension.pontoaponto.dto.Registros;
+import br.thirdimension.pontoaponto.dto.RegistrosDto;
 import br.thirdimension.pontoaponto.negocio.RegistrosNegocio;
 import br.thirdimension.pontoaponto.service.RegistrosService;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -42,9 +44,12 @@ public class RegistrosController {
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView hoje() {
         ModelAndView mv = new ModelAndView(REGISTROS_URI);
-        List<Registros> registros = registrosNegocio.filtrarRegistrosParaDataAtual();
+        RegistrosDto registros = registrosNegocio.filtrarRegistrosParaDataAtual();
         DiaDeTrabalho diaDeTrabalho = registrosNegocio.calcularTempoTrabalhadoPorJornadaTrabalho(registros);
         GraficoParametros graficoParametros = registrosNegocio.definirParametrosGrafico(diaDeTrabalho);
+            if(registros.getHora().size() > 1 && registros.getHora().get(registros.getHora().size()-1).getId() == null ){
+                registros.getHora().remove(registros.getHora().size()-1);
+            }
         mv.addObject("diaDeTrabalho", diaDeTrabalho);
         mv.addObject("graficoParametros", graficoParametros);
         mv.addObject("registros", registros);
@@ -52,9 +57,24 @@ public class RegistrosController {
     }
     
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Object> registroManual(@RequestBody Date registro){
+    public ResponseEntity<Object> registroManual(@RequestBody String registro){
+        String horaString[] = registro.split(":");
+        int hora[] = new int[2];
+        hora[0] = Integer.parseInt(horaString[0]);
+        hora[1] = Integer.parseInt(horaString[1]);
         try {
-            registrosService.inserirRegistroManual(registro);
+            registrosService.inserirRegistroDiaManual(LocalTime.of(hora[0], hora[1]));
+        } catch (Exception ex) {
+            Logger.getLogger(RegistrosController.class.getName()).log(Level.SEVERE, null, ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+        return ResponseEntity.ok().build();
+    }
+    
+    @DeleteMapping(path = "/remover/{id}")
+    public ResponseEntity<Object> removerRegistro(@PathVariable("id") long id){
+        try {
+        registrosService.removerRegistroDia(id);
         } catch (Exception ex) {
             Logger.getLogger(RegistrosController.class.getName()).log(Level.SEVERE, null, ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

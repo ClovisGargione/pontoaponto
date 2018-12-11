@@ -5,6 +5,13 @@
  */
 package br.thirdimension.pontoaponto.repository;
 
+import br.thirdimension.pontoaponto.exception.PesquisarException;
+import br.thirdimension.pontoaponto.model.Registros;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -29,5 +36,20 @@ public class RegistrosCustomRepository {
         }catch(NoResultException e) {
                 throw new Exception(e.getMessage());
         }
+    }
+    
+    public List<Registros> listarRegistroEntreDatasPorUsuario(Date dataInicial, Date dataFinal, String pis) throws PesquisarException{
+         TypedQuery<Registros> query = em.createQuery("SELECT r FROM RegistrosGerais r WHERE r.pis = :pis AND r.dataHoraRegistro BETWEEN :dataInicial AND :dataFinal", Registros.class);
+         query.setParameter("pis", pis);
+         query.setParameter("dataInicial", dataInicial);
+         query.setParameter("dataFinal", dataFinal);
+         List<Registros> listaDeRegistros = new ArrayList<>();
+         try{
+              listaDeRegistros = query.getResultList();
+         }catch(Exception ex){
+             Logger.getLogger(RegistrosCustomRepository.class.getName()).log(Level.SEVERE, null, ex);
+             throw new PesquisarException("Não foi possível localizar os registros entre as datas!");
+         }
+         return listaDeRegistros;
     }
 }

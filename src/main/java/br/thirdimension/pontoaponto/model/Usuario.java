@@ -6,10 +6,14 @@
 package br.thirdimension.pontoaponto.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalTime;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -20,7 +24,7 @@ public class Usuario {
     
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 	
     private String nome;
 	
@@ -29,26 +33,30 @@ public class Usuario {
     
     private String pis;
     
-    private int jornadaDeTrabalhoEmMinutos;
+    private LocalTime jornadaDeTrabalho;
+    
+    @OneToMany(mappedBy = "usuario", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private List<Registros> registros;
     	
     public Usuario() {
 
     }
 	
-    public Usuario(Integer id, String nome, Credenciais credenciais, String pis, int jornadaDeTrabalhoEmMinutos) {
+    public Usuario(Long id, String nome, Credenciais credenciais, String pis, LocalTime jornadaDeTrabalho, List<Registros> registros) {
             super();
             this.id = id;
             this.nome = nome;
             this.credenciais = credenciais;
             this.pis = pis;
-            this.jornadaDeTrabalhoEmMinutos = jornadaDeTrabalhoEmMinutos;
+            this.jornadaDeTrabalho = jornadaDeTrabalho;
+            this.registros = registros;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -76,11 +84,19 @@ public class Usuario {
         this.pis = pis;
     }   
 
-    public int getJornadaDeTrabalhoEmMinutos() {
-        return jornadaDeTrabalhoEmMinutos;
+    public LocalTime getJornadaDeTrabalho() {
+        return jornadaDeTrabalho;
     }
 
-    public void setJornadaDeTrabalhoEmMinutos(int jornadaDeTrabalhoEmMinutos) {
-        this.jornadaDeTrabalhoEmMinutos = jornadaDeTrabalhoEmMinutos;
+    public void setJornadaDeTrabalho(LocalTime jornadaDeTrabalho) {
+        this.jornadaDeTrabalho = jornadaDeTrabalho;
+    }
+
+    public List<Registros> getRegistros() {
+        return registros;
+    }
+
+    public void setRegistros(List<Registros> registros) {
+        this.registros = registros;
     }
 }

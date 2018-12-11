@@ -74,11 +74,13 @@
                                 <thead class="text-center">
                                     <tr>
                                         <th scope="col">Hora</th>
+                                        <th scope="col"></th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-center">
-                                    <tr th:each="registro, iterationStatus : ${registros}">
-                                        <td th:utext="${registro.dataHoraFormatada}"></td>
+                                    <tr th:each="registro, iterationStatus : ${registros.hora}">
+                                        <td th:utext="${registro.horaFormatada}"></td>
+                                        <td th:attr="onclick='confirmarExclusaoDeRegistro('+ ${registro.toString()} +')'" style="cursor: pointer"><i class="fa fa-trash text-danger"></i></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -91,20 +93,20 @@
                     <div class="row jumbotron" style="padding: 10px; margin-bottom:0; margin-top: 5px">
                         <div class="col-4">
                             <label>Horas trabalhadas:</label>
-                            <label class="horas_trabalhadas" th:text="${diaDeTrabalho.tempoTrabalhado}"></label>
+                            <label class="horas_trabalhadas" th:text="${diaDeTrabalho.tempoTrabalhadoFormatado}"></label>
                         </div>
                         <div class="col-4">
                             <label th:text="${diaDeTrabalho.labelExtrasNegativas}"></label>
-                            <label th:class="${diaDeTrabalho.extra} ? horas_extras : horas_restantes" style="font-weight: bold" th:text="${diaDeTrabalho.tempoFaltanteExtra}"></label>
+                            <label th:class="${diaDeTrabalho.extra} ? horas_extras : horas_restantes" style="font-weight: bold" th:text="${diaDeTrabalho.tempoFaltanteExtraFormatado}"></label>
                         </div>
                         <div class="col-4">
                             <label>Fim da jornada de trabalho:</label>
-                            <label class="fim_jornada" th:text="${diaDeTrabalho.horaSaida}"></label>
+                            <label class="fim_jornada" th:text="${diaDeTrabalho.horaSaidaFormatada}"></label>
                         </div>
                     </div>
                 </div>    
             </div>
-            <!-- Modal -->
+            <!-- Modal registro manual -->
             <div class="modal fade" id="registroManualModal" tabindex="-1" role="dialog" aria-labelledby="registroModal" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
@@ -125,8 +127,30 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal"><i class="fa fa-window-close" aria-hidden="true"></i> Fechar</button>
-                            <button type="button" class="btn btn-primary btn-sm" onclick="inserirRegistro('registro')"><i class="fa fa-save" aria-hidden="true"></i> Registrar</button>
+                            <button type="button" class="btn btn-light btn-sm" data-dismiss="modal"><i class="fa fa-close" aria-hidden="true"></i> Fechar</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="inserirRegistro('registro')"><i class="fa fa-save" aria-hidden="true"></i> Registrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+	    <!-- Modal remover registro -->
+	    <div class="modal fade" id="removerRegistroModal" tabindex="-1" role="dialog" aria-labelledby="registroModal" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="titulo"><i class="fa fa-clock-o" aria-hidden="true"></i> Remover registro</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <p id="perguntaConfirmar"></p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light btn-sm" data-dismiss="modal"><i class="fa fa-close" aria-hidden="true"></i> Fechar</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removerRegistro()"><i class="fa fa-trash" aria-hidden="true"></i> Remover</button>
                         </div>
                     </div>
                 </div>

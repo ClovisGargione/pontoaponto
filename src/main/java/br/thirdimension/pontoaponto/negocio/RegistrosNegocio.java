@@ -7,19 +7,25 @@ package br.thirdimension.pontoaponto.negocio;
 
 import br.thirdimension.pontoaponto.dto.DiaDeTrabalho;
 import br.thirdimension.pontoaponto.dto.GraficoParametros;
-import br.thirdimension.pontoaponto.dto.Registros;
-import br.thirdimension.pontoaponto.model.RegistrosGerais;
+import br.thirdimension.pontoaponto.dto.RegistroDiaDto;
+import br.thirdimension.pontoaponto.dto.RegistrosDto;
+import br.thirdimension.pontoaponto.model.RegistroDia;
+import br.thirdimension.pontoaponto.model.Registros;
 import br.thirdimension.pontoaponto.model.Usuario;
-import br.thirdimension.pontoaponto.repository.RegistrosRepository;
+import br.thirdimension.pontoaponto.repository.UsuarioRepository;
 import br.thirdimension.pontoaponto.service.RegistrosService;
 import br.thirdimension.pontoaponto.uteis.Conversores;
 import br.thirdimension.pontoaponto.uteis.UsuarioSessao;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,19 +58,18 @@ public class RegistrosNegocio {
     private RegistrosService registrosService;
     
     @Autowired
-    private RegistrosRepository registrosRepository;
+    private UsuarioRepository usuarioRepository;
     
     /**
-     * Importa e filtra os registros de ponto do dia por usuário logado
+     * Busca os registros de ponto do dia por usuário logado
      * @return - lista de registros
      */
-    public List<Registros> filtrarRegistrosParaDataAtual() {
-        importarRegistros();
-        List<Registros> listaRegistros = montarListaDeRegistrosDoDiaPorUsuario(sessao.getUsuario());
-        if (necessitaIncluirRegistroParaCalculo(listaRegistros)) {
-            adicionarRegistroParaCalculo(listaRegistros);
+    public RegistrosDto filtrarRegistrosParaDataAtual() {
+        RegistrosDto registros = montarRegistrosDoDiaPorUsuario(sessao.getUsuario());
+        if (necessitaIncluirRegistroParaCalculo(registros.getHora())) {
+            adicionarRegistroParaCalculo(registros.getHora());
         }
-        return listaRegistros;
+        return registros;
     }
     
     /**
@@ -72,28 +77,32 @@ public class RegistrosNegocio {
      * @param listaRegistros - registros de ponto do dia
      * @return - Objeto dia de trabalho definido
      */
-    public DiaDeTrabalho calcularTempoTrabalhadoPorJornadaTrabalho(List<Registros> listaRegistros) {
-        int[] totalHorasTrabalhadas = getTotalSomaHorasTrabalhadas(listaRegistros);
-        DiaDeTrabalho diaDeTrabalho = definirTempoTrabalhadoNoDiaDeTrabalho(totalHorasTrabalhadas[HORA], totalHorasTrabalhadas[MINUTO]);
-        int diferencaJornadaETotalTrabalhadoEmMinutos = 0;
-        if (sessao.getUsuario().getJornadaDeTrabalhoEmMinutos() > diaDeTrabalho.getTempoTrabalhadoEmMinutos()) {
+    public DiaDeTrabalho calcularTempoTrabalhadoPorJornadaTrabalho(RegistrosDto registros) {
+        LocalTime totalHorasTrabalhadas = getTotalSomaHorasTrabalhadas(registros);
+        DiaDeTrabalho diaDeTrabalho = definirTempoTrabalhadoNoDiaDeTrabalho(totalHorasTrabalhadas);
+        Long diferencaJornadaETotalTrabalhadoEmMinutos = 0L;
+        if (sessao.getUsuario().getJornadaDeTrabalho().isAfter(diaDeTrabalho.getTempoTrabalhado())) {
             Calendar cal = Calendar.getInstance();
-            diferencaJornadaETotalTrabalhadoEmMinutos = sessao.getUsuario().getJornadaDeTrabalhoEmMinutos() - diaDeTrabalho.getTempoTrabalhadoEmMinutos();
+            diferencaJornadaETotalTrabalhadoEmMinutos = diaDeTrabalho.getTempoTrabalhado().until(sessao.getUsuario().getJornadaDeTrabalho(), ChronoUnit.MINUTES);
             diaDeTrabalho.setExtra(false);
             diaDeTrabalho.setLabelExtrasNegativas("Horas restantes: ");
-            cal = definirHoraEncerramentoJornada(diferencaJornadaETotalTrabalhadoEmMinutos);
-            diaDeTrabalho.setHoraSaida(conversor.dataParaStringHora(cal.getTime()));
+            LocalTime diferencaJornadaETotalTrabalhado = LocalTime.now();
+            diferencaJornadaETotalTrabalhado = diferencaJornadaETotalTrabalhado.plusMinutes(diferencaJornadaETotalTrabalhadoEmMinutos);
+            //cal = definirHoraEncerramentoJornada(diferencaJornadaETotalTrabalhadoEmMinutos);
+            diaDeTrabalho.setHoraSaidaFormatada(conversor.localTimeParaStringHora(diferencaJornadaETotalTrabalhado));
         } else {
-            diferencaJornadaETotalTrabalhadoEmMinutos = diaDeTrabalho.getTempoTrabalhadoEmMinutos() - sessao.getUsuario().getJornadaDeTrabalhoEmMinutos();
+            diferencaJornadaETotalTrabalhadoEmMinutos = diaDeTrabalho.getTempoTrabalhado().until(sessao.getUsuario().getJornadaDeTrabalho(), ChronoUnit.MINUTES);
             diaDeTrabalho.setExtra(true);
             diaDeTrabalho.setLabelExtrasNegativas("Horas extras: ");
-            diaDeTrabalho.setHoraSaida("Encerrada");
+            diaDeTrabalho.setHoraSaidaFormatada("Encerrada");
         }
-        int[] tempo = conversor.minutosParaHoraEminutos(diferencaJornadaETotalTrabalhadoEmMinutos);
-        Date data = conversor.definirHoraMinutoEmData(tempo[HORA], tempo[MINUTO]);
-        int totalMinutos = conversor.converterHoraParaMinutos(tempo[HORA], tempo[MINUTO]); 
-        diaDeTrabalho.setTempoFaltanteExtraEmMinutos(totalMinutos);
-        diaDeTrabalho.setTempoFaltanteExtra(conversor.dataParaStringHora(data));
+        //int[] tempo = conversor.minutosParaHoraEminutos(diferencaJornadaETotalTrabalhadoEmMinutos);
+        //Date data = conversor.definirHoraMinutoEmData(tempo[HORA], tempo[MINUTO]);
+        LocalTime tempo = LocalTime.MIN;
+        tempo = tempo.plusMinutes(diferencaJornadaETotalTrabalhadoEmMinutos);
+        //int totalMinutos = conversor.converterHoraParaMinutos(tempo[HORA], tempo[MINUTO]); 
+        diaDeTrabalho.setTempoFaltanteExtraFormatado(conversor.localTimeParaStringHora(tempo));
+        diaDeTrabalho.setTempoFaltanteExtra(tempo);
         return diaDeTrabalho;
     }
 
@@ -113,15 +122,15 @@ public class RegistrosNegocio {
             graficoParametros.getDatasetsLabel().add(HORAS_EXTRAS);
             graficoParametros.getDataBackgroundColor().add(COR_GRAFICO_HORAS_EXTRAS);
             graficoParametros.getDataBorderColor().add(COR_GRAFICO_BORDA_HORAS_EXTRAS);
-            graficoParametros.getDatasetsData().add(sessao.getUsuario().getJornadaDeTrabalhoEmMinutos());
+            graficoParametros.getDatasetsData().add(conversor.converterHoraParaMinutos(sessao.getUsuario().getJornadaDeTrabalho().getHour(), sessao.getUsuario().getJornadaDeTrabalho().getMinute()));
         }else{
             graficoParametros.getLabels().add(HORAS_RESTANTES);
             graficoParametros.getDatasetsLabel().add(HORAS_RESTANTES);
             graficoParametros.getDataBackgroundColor().add(COR_GRAFICO_HORAS_RESTANTES);
             graficoParametros.getDataBorderColor().add(COR_GRAFICO_BORDA_HORAS_RESTANTES);
-            graficoParametros.getDatasetsData().add(diaDeTrabalho.getTempoTrabalhadoEmMinutos());
+            graficoParametros.getDatasetsData().add(conversor.converterHoraParaMinutos(diaDeTrabalho.getTempoTrabalhado().getHour(), diaDeTrabalho.getTempoTrabalhado().getMinute()));
         }
-         graficoParametros.getDatasetsData().add(diaDeTrabalho.getTempoFaltanteExtraEmMinutos());
+         graficoParametros.getDatasetsData().add(conversor.converterHoraParaMinutos(diaDeTrabalho.getTempoFaltanteExtra().getHour(), diaDeTrabalho.getTempoFaltanteExtra().getMinute()));
          return graficoParametros;
     }
      
@@ -130,7 +139,7 @@ public class RegistrosNegocio {
      * @param listaRegistros
      * @return 
      */
-    private boolean necessitaIncluirRegistroParaCalculo(List<Registros> listaRegistros) {
+    private boolean necessitaIncluirRegistroParaCalculo(List<RegistroDiaDto> listaRegistros) {
         return ((listaRegistros.size() % 2) != 0);
     }
     
@@ -139,9 +148,8 @@ public class RegistrosNegocio {
      * @param listaRegistros
      * @return 
      */
-    private List<Registros> adicionarRegistroParaCalculo(List<Registros> listaRegistros) {
-        listaRegistros.add(new Registros(sessao.getUsuario().getPis(), new Date()));
-        return listaRegistros;
+    private void adicionarRegistroParaCalculo(List<RegistroDiaDto> listaRegistrosDia) {
+        listaRegistrosDia.add(new RegistroDiaDto(LocalTime.now(), conversor.localTimeParaStringHora(LocalTime.now())));
     }
     
     /**
@@ -149,25 +157,29 @@ public class RegistrosNegocio {
      * @param listaRegistros
      * @return 
      */
-    private int[] getTotalSomaHorasTrabalhadas(List<Registros> listaRegistros) {
+    private LocalTime getTotalSomaHorasTrabalhadas(RegistrosDto registros) {
         int[] totalHorasTrabalhadas = new int[2];
         Duration diff = null;
-        List<Integer> horas = new ArrayList<>();
-        List<Integer> minutos = new ArrayList<>();
-        for (int index = 0; index < listaRegistros.size(); index += 2) {
-            diff = Duration.between(listaRegistros.get(index).getDataHora().toInstant(), listaRegistros.get(index + 1).getDataHora().toInstant());
+        //List<Integer> horas = new ArrayList<>();
+        //List<Integer> minutos = new ArrayList<>();
+        LocalTime tempoTrabalhado = LocalTime.MIN;
+        for (int index = 0; index < registros.getHora().size(); index += 2) {
+            diff = Duration.between(registros.getHora().get(index).getHora(), registros.getHora().get(index + 1).getHora());
             int hours = (int) (diff.toMinutes() / 60);
-            horas.add(hours);
+           // horas.add(hours);
             int minutes = (int) (diff.toMinutes() % 60);
-            minutos.add(minutes);
+            //minutos.add(minutes);
+            tempoTrabalhado = tempoTrabalhado.plusHours(hours);
+            tempoTrabalhado = tempoTrabalhado.plusMinutes(minutes);
         }
-        horas.forEach((hora) -> {
+      /*  horas.forEach((hora) -> {
             totalHorasTrabalhadas[HORA] += hora;
         });
         minutos.forEach((minuto) -> {
             totalHorasTrabalhadas[MINUTO] += minuto;
-        });
-        return totalHorasTrabalhadas;
+        });*/
+        //return totalHorasTrabalhadas;
+        return tempoTrabalhado;
     }
     
     /**
@@ -189,40 +201,48 @@ public class RegistrosNegocio {
      * @param minutos
      * @return 
      */
-    private DiaDeTrabalho definirTempoTrabalhadoNoDiaDeTrabalho(int horas, int minutos) {
+    private DiaDeTrabalho definirTempoTrabalhadoNoDiaDeTrabalho(LocalTime tempoTrabalhado) {
         DiaDeTrabalho diaDeTrabalho = new DiaDeTrabalho();
-        int[] horaAjustada = conversor.ajustarMinutos(horas, minutos);
-        Date data = conversor.definirHoraMinutoEmData(horaAjustada[HORA], horaAjustada[MINUTO]);
-        int totalMinutos = conversor.converterHoraParaMinutos(horaAjustada[HORA], horaAjustada[MINUTO]); 
-        diaDeTrabalho.setTempoTrabalhadoEmMinutos(totalMinutos);
-        diaDeTrabalho.setTempoTrabalhado(conversor.dataParaStringHora(data));
-        int[] jornadaDeTrabalho = conversor.minutosParaHoraEminutos(sessao.getUsuario().getJornadaDeTrabalhoEmMinutos());
-        Date jornadaDeTrabalhoData = conversor.definirHoraMinutoEmData(jornadaDeTrabalho[HORA], jornadaDeTrabalho[MINUTO]);
-        diaDeTrabalho.setJornadaDeTrabalho("Jornada de trabalho: " + conversor.dataParaStringHora(jornadaDeTrabalhoData));
+        diaDeTrabalho.setTempoTrabalhado(tempoTrabalhado);
+        diaDeTrabalho.setTempoTrabalhadoFormatado(conversor.localTimeParaStringHora(tempoTrabalhado));
+        diaDeTrabalho.setJornadaDeTrabalho("Jornada de trabalho: " + conversor.localTimeParaStringHora(sessao.getUsuario().getJornadaDeTrabalho()));
         return diaDeTrabalho;
     }
     
     /**
      * Importa registros do rep para a aplicação
      */
-    private void importarRegistros() {
-      List<Registros> registrosREP = registrosService.buscarListaDeRegistrosREP();
+   /* private void importarRegistros() {
+      List<RegistrosDto> registrosREP = registrosService.buscarListaDeRegistrosREP();
       registrosService.importarRegistros(registrosREP);
-    }
+    }*/
     
     /**
-     * Busca os registros na base e ordena pela hora dos registros
+     * Busca os registros na base e monta dto
      * @param usuario
-     * @return - lista de registros ordenada pela hora
+     * @return - lista de registros
      */
-    private List<Registros> montarListaDeRegistrosDoDiaPorUsuario(Usuario usuario){
-        List<Registros> listaRegistros = new ArrayList<>();
-        List<RegistrosGerais> registrosGerais = registrosRepository.findAll();
-        Date hoje = new Date();
-        registrosGerais.stream().filter((gerais) -> (gerais.getPis().equals(usuario.getPis()) && gerais.getDataHoraRegistro().getDate() == hoje.getDate()&& gerais.getDataHoraRegistro().getMonth() == hoje.getMonth() && gerais.getDataHoraRegistro().getYear() == hoje.getYear())).forEachOrdered((gerais) -> {
-            listaRegistros.add(new Registros(conversor.dataParaStringHora(gerais.getDataHoraRegistro()), gerais.getPis(), gerais.getNSR(), gerais.getDataHoraRegistro(), conversor.dataParaStringHora(gerais.getDataHoraRegistro())));
-        });
-        Collections.sort(listaRegistros);
-        return listaRegistros;
+    private RegistrosDto montarRegistrosDoDiaPorUsuario(Usuario usuario){
+        Registros registro =  registrosService.buscarUltimoRegistroInserido(usuario);
+        if(registro == null){
+            registro = new Registros();
+            try {
+                registro = registrosService.inserirRegistroManual(LocalDate.now());
+                registro.setRegistroDia(new ArrayList<>());
+            } catch (Exception ex) {
+                Logger.getLogger(RegistrosNegocio.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        List<RegistroDiaDto> registrosDiaDto = converterListaEntidadeEmListaDto(registro.getRegistroDia());
+        RegistrosDto registrosDto = new RegistrosDto(registro.getID(), conversor.localDateParaString(registro.getDataRegistro()), registro.getDataRegistro(), registrosDiaDto);
+        return registrosDto;
+    }
+    
+    private List<RegistroDiaDto> converterListaEntidadeEmListaDto(List<RegistroDia> registrosDia){
+        List<RegistroDiaDto> registrosDiaDto = new ArrayList<>();
+        for(RegistroDia registroDia : registrosDia){
+            registrosDiaDto.add(new RegistroDiaDto(registroDia.getId(), registroDia.getHora(), conversor.localTimeParaStringHora(registroDia.getHora())));
+        }
+        return registrosDiaDto;
     }
 }

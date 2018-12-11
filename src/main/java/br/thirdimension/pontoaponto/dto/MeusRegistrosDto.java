@@ -6,15 +6,13 @@
 package br.thirdimension.pontoaponto.dto;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
  *
  * @author clovis
  */
-public class MeusRegistrosDto {
+public class MeusRegistrosDto implements Comparable<MeusRegistrosDto>{
     
     private String dataHoraFormatada;
     
@@ -45,4 +43,8 @@ public class MeusRegistrosDto {
         this.horaDoRegistro = horaDoRegistro;
     }
     
+    @Override
+    public int compareTo(MeusRegistrosDto o) {
+        return getDataHoraFormatada().compareTo(o.getDataHoraFormatada());
+    }
 }

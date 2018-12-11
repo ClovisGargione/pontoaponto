@@ -8,6 +8,9 @@ package br.thirdimension.pontoaponto.uteis;
 import br.thirdimension.pontoaponto.controller.RegistrosController;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,6 +58,16 @@ public class Conversores {
     public String dataParaString(Date data) {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         String dataString = format.format(data);
+        return dataString;
+    }
+    
+    public String localTimeParaStringHora(LocalTime hora) {
+        String dataString = hora.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        return dataString;
+    }
+    
+    public String localDateParaString(LocalDate data) {
+        String dataString = data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         return dataString;
     }
     

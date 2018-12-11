@@ -5,23 +5,7 @@
  */
 package br.thirdimension.pontoaponto.api.client;
 
-import br.thirdimension.pontoaponto.dto.Registros;
-import br.thirdimension.pontoaponto.exception.REPException;
-import java.net.URI;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 /**
  *
@@ -31,18 +15,18 @@ import org.springframework.web.client.RestTemplate;
 public class REPApiClient {
 
     private static final String ENDPOINT = "http://localhost:3000/api/rep";
-
-    public List<Registros> registros() throws REPException {
+/*
+    public List<RegistrosDto> registros() throws REPException {
         RestTemplate resttemplate = new RestTemplate();
 
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         //Verificar com @fabio se irá precisar de cabecalho
         //headers.add("Authorization", "Bearer " + token);
 
-        RequestEntity<Registros> request = new RequestEntity<>(headers, HttpMethod.GET, URI.create(ENDPOINT));
+        RequestEntity<RegistrosDto> request = new RequestEntity<>(headers, HttpMethod.GET, URI.create(ENDPOINT));
 
         try {
-            ResponseEntity<Registros[]> resposta = resttemplate.exchange(request, Registros[].class);
+            ResponseEntity<RegistrosDto[]> resposta = resttemplate.exchange(request, RegistrosDto[].class);
             if (resposta.getStatusCode().is2xxSuccessful()) {
                 return listaFromArray(resposta.getBody());
             } else {
@@ -51,16 +35,16 @@ public class REPApiClient {
         } catch (Exception c) {
             throw new REPException("não foi possível obter os registros de ponto do REP!");
         }
-    }
-
-    private List<Registros> listaFromArray(Registros[] registros) {
-        List<Registros> lista = new ArrayList<>();
+    }*/
+/*
+    private List<RegistrosDto> listaFromArray(RegistrosDto[] registros) {
+        List<RegistrosDto> lista = new ArrayList<>();
         SimpleDateFormat format = null;
-        for (Registros registro : registros) {
+        for (RegistrosDto registro : registros) {
             format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             try {
                Date data = new Date(format.parse(registro.getDataHoraRegistro()).getTime());
-                registro.setDataHora(data);
+                registro.setDataHora(data.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
             } catch (ParseException ex) {
                 Logger.getLogger(REPApiClient.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -70,19 +54,19 @@ public class REPApiClient {
         }
 
         return lista;
-    }
-    
+    }*/
+    /*
     @Deprecated
     public static void main(String[] args ){
         
         
         REPApiClient apiClient = new REPApiClient();
         try {
-            List<Registros> registroses = apiClient.registros();
+            List<RegistrosDto> registroses = apiClient.registros();
             System.out.println(registroses.isEmpty());
         } catch (REPException ex) {
             Logger.getLogger(REPApiClient.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
+    }*/
 
 }

@@ -22,7 +22,7 @@ public class ResourceOwner implements UserDetails {
         this.usuario = usuario;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return usuario.getId();
     }
 

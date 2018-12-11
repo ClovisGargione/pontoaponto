@@ -5,9 +5,13 @@
  */
 package br.thirdimension.pontoaponto.repository;
 
-import br.thirdimension.pontoaponto.model.RegistrosGerais;
-import java.util.List;
-import org.springframework.data.jpa.repository.JpaRepository;
+import br.thirdimension.pontoaponto.model.Registros;
+import br.thirdimension.pontoaponto.model.Usuario;
+import java.time.LocalDate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -15,7 +19,20 @@ import org.springframework.stereotype.Repository;
  * @author clovis.rodrigues
  */
 @Repository
-public interface RegistrosRepository extends JpaRepository<RegistrosGerais, Long>{
+public interface RegistrosRepository extends PagingAndSortingRepository<Registros, Long>{
     
-    List<RegistrosGerais> findByPis(String pis);
+    @Query("SELECT r FROM Registros r WHERE r.usuario = ?1")
+    Page<Registros> findByUsuario(Usuario usuario, Pageable pageable);
+    
+    @Query("SELECT r FROM Registros r WHERE r.dataRegistro BETWEEN ?1 AND ?2 AND r.usuario = ?3")
+    Page<Registros> listarRegistroEntreDatasPorUsuario(LocalDate dataInicial, LocalDate dataFinal, Usuario usuario, Pageable pageable);
+    
+    @Query("SELECT r FROM Registros r WHERE r.dataRegistro > ?1 AND r.usuario = ?2")
+    Page<Registros> listarRegistrosApartirDaData(LocalDate dataInicial, Usuario usuario, Pageable pageable);
+    
+    @Query("SELECT r FROM Registros r WHERE r.dataRegistro < ?1 AND r.usuario = ?2")
+    Page<Registros> listarRegistrosAteAData(LocalDate dataFinal, Usuario usuario, Pageable pageable);
+    
+    @Query("SELECT r FROM Registros r WHERE r.dataRegistro = ?1 AND r.usuario = ?2")
+    Registros buscarUltimoRegistroInserido(LocalDate dataAtual, Usuario usuario);
 }

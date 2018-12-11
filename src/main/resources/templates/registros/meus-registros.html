@@ -5,6 +5,12 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html layout:decorate="~{layouts/layout}">
+    <head>
+        <link rel="stylesheet" href="/webjars/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.min.css" />
+        <script src="/webjars/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js"></script>
+        <script src="/webjars/bootstrap-datepicker/1.4.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+        <script src="/js/meus-registros.js"></script>
+    </head>
     <body class="background-default">
         <div layout:fragment="header">
             <br/>
@@ -12,21 +18,133 @@ and open the template in the editor.
         <div layout:fragment="content" class="container">
             <div class="card shadow">
                 <h4 class="card-header">
+                    <i class="fa fa-filter"></i> Filtrar registros
+                </h4>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <div data-toggle="tooltip" data-placement="top" title="Período">
+                                <div class="input-daterange input-group" id="datepicker">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    <input 
+                                        class="form-control" 
+                                        id="dataInicial"
+                                        data-provide="datepicker">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text" id="basic-addon2"
+                                              style="border-right: 0px;">&nbsp;até&nbsp;</span>
+                                    </div>
+                                    <input 
+                                        class="form-control" 
+                                        id="dataFinal"
+                                        data-provide="datepicker">
+                                </div>
+                                <small id="erroData" class="text-danger" style="display: none;">Data
+                                    final deve ser maior que a data inicial</small>
+                            </div>
+                        </div>
+                        <div class="col-5 align-self-center d-flex justify-content-center">
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input type="checkbox" id="todos" name="filtroHoras" class="custom-control-input" checked>
+                                <label class="custom-control-label" for="todos">Todos</label>
+                            </div>
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input type="checkbox" id="horaPositiva" name="filtroHoras" class="custom-control-input">
+                                <label class="custom-control-label" for="horaPositiva">Hora positiva</label>
+                            </div>
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input type="checkbox" id="horaNegativa" name="filtroHoras" class="custom-control-input">
+                                <label class="custom-control-label" for="horaNegativa">Hora negativa</label>
+                            </div>
+                        </div>
+                        <div class="col-3 align-self-center">
+                            <div class="custom-control custom-checkbox mr-sm-2">
+                                <input type="checkbox" class="custom-control-input" id="incompletos">
+                                <label class="custom-control-label" for="incompletos">Registros incompletos</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="pull-right">
+                        <button type="button" class="btn btn-light btn-sm" onclick="limpar()"><i class="fa fa-eraser"></i> Limpar</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="pesquisar()"><i class="fa fa-search"></i> Filtrar</button>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="card shadow">
+                <h4 class="card-header">
                     <i class="fa fa-th-list"></i> Meus registros
                 </h4>
-                <div class="card-block padding-card">
-                    <span class="list-group-item list-group-item-action flex-column align-items-start" th:each="registro, iterationStatus : ${registros}">
-                        <div class="d-flex w-100 justify-content-between">
-                            <span class="link" data-toggle="tooltip" data-placement="top"
-                                  title="Registros do dia" style="display: flex"><h5
-                                    class="mb-1" th:utext="${registro.dataHoraFormatada}"></h5> <i
-                                    class="fa fa-clock-o pl-1 pt-1" aria-hidden="true"></i></span>
-                            <span style="display: block"> 
+                <div class="card-body" id="lista-registros">
+                    <div th:fragment="resultado-pesquisa">
+                        <div class="row">
+                            <div class="col-12">
+                                <span th:each="registro, iterationStatus : ${registros}" class="list-group-item list-group-item-action flex-column align-items-start">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <span class="link" data-toggle="tooltip" data-placement="top"
+                                              title="Registros do dia" style="display: flex"><h5
+                                                class="mb-1" th:utext="${registro.dataRegistroFormatada}"></h5> <i
+                                                class="fa fa-clock-o pl-1 pt-1" aria-hidden="true"></i></span>
+                                        <span style="display: block"> 
+                                    </div>
+                                    <span th:each="hora, iterationStatus : ${registro.hora}">
+                                        <small th:utext="${hora.horaFormatada}" class="badge badge-primary"></small>
+                                    </span>
+                                </span>
+                            </div>
                         </div>
-                        <span th:each="hora, iterationStatus : ${registro.horaDoRegistro}">
-                            <small th:utext="${hora}" class="badge badge-primary"></small>
-                        </span>
-                    </span>
+                        <br>
+                        <div class="row">
+                            <div class="col-1">
+                                <select class="form-control pagination" id="pageSizeSelect">
+                                    <option th:each="pageSize : ${pageSizes}" th:text="${pageSize}"
+                                            th:value="${pageSize}"
+                                            th:selected="${pageSize} == ${selectedPageSize}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-11" th:if="${pager.totalPages != 1}">
+                                <div class="pull-right">
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination">
+                                            <li class="page-item" th:class="${pager.number == 0} ? disabled">
+                                                <a class="page-link link-color" th:onclick="'paginacao(\''+'?pageSize='+${selectedPageSize}+'&page='+1+'\')'">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                    <span class="sr-only">Anterior</span>
+                                                </a>
+                                            </li>
+                                            <li class="page-item" th:class="${pager.number == 0} ? disabled">
+                                                <a class="page-link link-color" th:onclick="'paginacao(\''+'pageSize='+${selectedPageSize}+'&page='+${pager.number}+'\')'">←</a>
+                                            </li>
+                                            <li class="page-item" th:class="${pager.number == (page - 1)} ? 'page-item active' : 'link-color'"
+                                                th:each="page : ${#numbers.sequence(pager.startPage, pager.endPage)}">
+                                                <a class="page-link" th:onclick="'paginacao(\''+'pageSize='+${selectedPageSize}+'&page='+${page}+'\')'"
+                                                   th:text="${page}"></a>
+                                            </li>
+                                            <li class="page-item" th:class="${pager.number + 1  == pager.totalPages} ? 'disabled'">
+                                                <a class="page-link link-color" 
+                                                   th:onclick="'paginacao(\''+'pageSize='+${selectedPageSize}+'&page='+${pager.number + 2}+'\')'">→</a>
+                                            </li>
+                                            <li class="page-item" th:class="${pager.number + 1 == pager.totalPages} ? disabled">
+                                                <a class="page-link link-color" 
+                                                   th:onclick="'paginacao(\''+'pageSize='+${selectedPageSize}+'&page='+${pager.totalPages}+'\')'" 
+                                                   aria-label="Next">
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                    <span class="sr-only">Próximo</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
