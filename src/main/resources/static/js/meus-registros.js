@@ -39,19 +39,27 @@ function pesquisar() {
 function montarUrlPesquisa(){
     var dataInicial = document.getElementById('dataInicial');
     var dataFinal = document.getElementById('dataFinal');
+    var todos = document.getElementById('todos');
+    var horaPositiva = document.getElementById('horaPositiva');
+    var horaNegativa = document.getElementById('horaNegativa');
+    var incompletos = document.getElementById('incompletos');
     var dataInicialParam = dataInicial.value;
     var dataFinalParam = dataFinal.value;
+    var todosParam = todos.checked;
+    var horaPositivaParam = horaPositiva.checked;
+    var horaNegativaParam = horaNegativa.checked;
+    var incompletosParam = incompletos.checked;
     var filtro = {};
-    var urlParametros = "";
+    var urlParametros = "todos=" + todosParam + "&" + "horaPositiva=" + horaPositivaParam + "&" + "horaNegativa=" + horaNegativaParam + "&" + "incompletos=" + incompletosParam;
     if (dataInicialParam) {
         dataInicialParam = moment(dataInicialParam, "DD/MM/YYYY").valueOf();
         filtro.dataInicial = dataInicialParam;
-        urlParametros = "dataInicial=" + filtro.dataInicial + "&";
+        urlParametros += "&dataInicial=" + filtro.dataInicial;
     }
     if(dataFinalParam){
         dataFinalParam = moment(dataFinalParam, "DD/MM/YYYY").valueOf();
         filtro.dataFinal= dataFinalParam;
-        urlParametros +=  "dataFinal=" + filtro.dataFinal;
+        urlParametros +=  "&dataFinal=" + filtro.dataFinal;
     }
     return urlParametros;
 }

@@ -5,13 +5,13 @@
  */
 package br.thirdimension.pontoaponto.repository;
 
-import br.thirdimension.pontoaponto.model.RegistroDia;
+import br.thirdimension.pontoaponto.model.RegistrosDia;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 /**
  *
  * @author clovis
  */
-public interface RegistrosDiaRepository extends PagingAndSortingRepository<RegistroDia, Long>{
+public interface RegistrosDiaRepository extends PagingAndSortingRepository<RegistrosDia, Long>{
     
 }

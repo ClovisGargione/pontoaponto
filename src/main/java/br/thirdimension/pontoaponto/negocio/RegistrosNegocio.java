@@ -9,10 +9,9 @@ import br.thirdimension.pontoaponto.dto.DiaDeTrabalho;
 import br.thirdimension.pontoaponto.dto.GraficoParametros;
 import br.thirdimension.pontoaponto.dto.RegistroDiaDto;
 import br.thirdimension.pontoaponto.dto.RegistrosDto;
-import br.thirdimension.pontoaponto.model.RegistroDia;
 import br.thirdimension.pontoaponto.model.Registros;
+import br.thirdimension.pontoaponto.model.RegistrosDia;
 import br.thirdimension.pontoaponto.model.Usuario;
-import br.thirdimension.pontoaponto.repository.UsuarioRepository;
 import br.thirdimension.pontoaponto.service.RegistrosService;
 import br.thirdimension.pontoaponto.uteis.Conversores;
 import br.thirdimension.pontoaponto.uteis.UsuarioSessao;
@@ -22,7 +21,6 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,10 +54,7 @@ public class RegistrosNegocio {
     
     @Autowired
     private RegistrosService registrosService;
-    
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-    
+        
     /**
      * Busca os registros de ponto do dia por usuário logado
      * @return - lista de registros
@@ -82,25 +77,20 @@ public class RegistrosNegocio {
         DiaDeTrabalho diaDeTrabalho = definirTempoTrabalhadoNoDiaDeTrabalho(totalHorasTrabalhadas);
         Long diferencaJornadaETotalTrabalhadoEmMinutos = 0L;
         if (sessao.getUsuario().getJornadaDeTrabalho().isAfter(diaDeTrabalho.getTempoTrabalhado())) {
-            Calendar cal = Calendar.getInstance();
             diferencaJornadaETotalTrabalhadoEmMinutos = diaDeTrabalho.getTempoTrabalhado().until(sessao.getUsuario().getJornadaDeTrabalho(), ChronoUnit.MINUTES);
             diaDeTrabalho.setExtra(false);
             diaDeTrabalho.setLabelExtrasNegativas("Horas restantes: ");
             LocalTime diferencaJornadaETotalTrabalhado = LocalTime.now();
             diferencaJornadaETotalTrabalhado = diferencaJornadaETotalTrabalhado.plusMinutes(diferencaJornadaETotalTrabalhadoEmMinutos);
-            //cal = definirHoraEncerramentoJornada(diferencaJornadaETotalTrabalhadoEmMinutos);
             diaDeTrabalho.setHoraSaidaFormatada(conversor.localTimeParaStringHora(diferencaJornadaETotalTrabalhado));
         } else {
-            diferencaJornadaETotalTrabalhadoEmMinutos = diaDeTrabalho.getTempoTrabalhado().until(sessao.getUsuario().getJornadaDeTrabalho(), ChronoUnit.MINUTES);
+            diferencaJornadaETotalTrabalhadoEmMinutos = sessao.getUsuario().getJornadaDeTrabalho().until(diaDeTrabalho.getTempoTrabalhado(), ChronoUnit.MINUTES);
             diaDeTrabalho.setExtra(true);
             diaDeTrabalho.setLabelExtrasNegativas("Horas extras: ");
             diaDeTrabalho.setHoraSaidaFormatada("Encerrada");
         }
-        //int[] tempo = conversor.minutosParaHoraEminutos(diferencaJornadaETotalTrabalhadoEmMinutos);
-        //Date data = conversor.definirHoraMinutoEmData(tempo[HORA], tempo[MINUTO]);
         LocalTime tempo = LocalTime.MIN;
         tempo = tempo.plusMinutes(diferencaJornadaETotalTrabalhadoEmMinutos);
-        //int totalMinutos = conversor.converterHoraParaMinutos(tempo[HORA], tempo[MINUTO]); 
         diaDeTrabalho.setTempoFaltanteExtraFormatado(conversor.localTimeParaStringHora(tempo));
         diaDeTrabalho.setTempoFaltanteExtra(tempo);
         return diaDeTrabalho;
@@ -158,27 +148,15 @@ public class RegistrosNegocio {
      * @return 
      */
     private LocalTime getTotalSomaHorasTrabalhadas(RegistrosDto registros) {
-        int[] totalHorasTrabalhadas = new int[2];
         Duration diff = null;
-        //List<Integer> horas = new ArrayList<>();
-        //List<Integer> minutos = new ArrayList<>();
         LocalTime tempoTrabalhado = LocalTime.MIN;
         for (int index = 0; index < registros.getHora().size(); index += 2) {
             diff = Duration.between(registros.getHora().get(index).getHora(), registros.getHora().get(index + 1).getHora());
             int hours = (int) (diff.toMinutes() / 60);
-           // horas.add(hours);
             int minutes = (int) (diff.toMinutes() % 60);
-            //minutos.add(minutes);
             tempoTrabalhado = tempoTrabalhado.plusHours(hours);
             tempoTrabalhado = tempoTrabalhado.plusMinutes(minutes);
         }
-      /*  horas.forEach((hora) -> {
-            totalHorasTrabalhadas[HORA] += hora;
-        });
-        minutos.forEach((minuto) -> {
-            totalHorasTrabalhadas[MINUTO] += minuto;
-        });*/
-        //return totalHorasTrabalhadas;
         return tempoTrabalhado;
     }
     
@@ -228,19 +206,19 @@ public class RegistrosNegocio {
             registro = new Registros();
             try {
                 registro = registrosService.inserirRegistroManual(LocalDate.now());
-                registro.setRegistroDia(new ArrayList<>());
+                registro.setRegistrosDia(new ArrayList<>());
             } catch (Exception ex) {
                 Logger.getLogger(RegistrosNegocio.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        List<RegistroDiaDto> registrosDiaDto = converterListaEntidadeEmListaDto(registro.getRegistroDia());
+        List<RegistroDiaDto> registrosDiaDto = converterListaEntidadeEmListaDto(registro.getRegistrosDia());
         RegistrosDto registrosDto = new RegistrosDto(registro.getID(), conversor.localDateParaString(registro.getDataRegistro()), registro.getDataRegistro(), registrosDiaDto);
         return registrosDto;
     }
     
-    private List<RegistroDiaDto> converterListaEntidadeEmListaDto(List<RegistroDia> registrosDia){
+    private List<RegistroDiaDto> converterListaEntidadeEmListaDto(List<RegistrosDia> registrosDia){
         List<RegistroDiaDto> registrosDiaDto = new ArrayList<>();
-        for(RegistroDia registroDia : registrosDia){
+        for(RegistrosDia registroDia : registrosDia){
             registrosDiaDto.add(new RegistroDiaDto(registroDia.getId(), registroDia.getHora(), conversor.localTimeParaStringHora(registroDia.getHora())));
         }
         return registrosDiaDto;

@@ -33,9 +33,8 @@ public class Registros {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
     
-    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JoinColumn(name = "registro_id", nullable = true)
-    private List<RegistroDia> registroDia;
+    @OneToMany(mappedBy = "registros", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private List<RegistrosDia> registrosDia;
 
     public Registros(LocalDate dataRegistro, Usuario usuario) {
         this.dataRegistro = dataRegistro;
@@ -69,11 +68,11 @@ public class Registros {
         this.usuario = usuario;
     }
 
-    public List<RegistroDia> getRegistroDia() {
-        return registroDia;
+    public List<RegistrosDia> getRegistrosDia() {
+        return registrosDia;
     }
 
-    public void setRegistroDia(List<RegistroDia> registroDia) {
-        this.registroDia = registroDia;
+    public void setRegistrosDia(List<RegistrosDia> registroDia) {
+        this.registrosDia = registroDia;
     }
 }

@@ -5,7 +5,7 @@
  */
 package br.thirdimension.pontoaponto.service;
 
-import br.thirdimension.pontoaponto.model.RegistroDia;
+import br.thirdimension.pontoaponto.model.RegistrosDia;
 import br.thirdimension.pontoaponto.model.Registros;
 import br.thirdimension.pontoaponto.model.Usuario;
 import br.thirdimension.pontoaponto.repository.RegistrosDiaRepository;
@@ -50,10 +50,10 @@ public class RegistrosService {
     }
     
     public Registros inserirRegistroDiaManual(LocalTime hora) throws Exception{
-        Registros registrosGerais = registrosRepository.buscarUltimoRegistroInserido(LocalDate.now(), usuarioSessao.getUsuario());
-        registrosGerais.getRegistroDia().add(new RegistroDia(hora));
-        registrosRepository.save(registrosGerais);
-        return registrosGerais;
+        Registros registro = registrosRepository.buscarUltimoRegistroInserido(LocalDate.now(), usuarioSessao.getUsuario());
+        registro.getRegistrosDia().add(new RegistrosDia(hora, registro));
+        registrosRepository.save(registro);
+        return registro;
     }
     
     public void removerRegistro(long id){
@@ -62,7 +62,7 @@ public class RegistrosService {
     }
     
     public void removerRegistroDia(long id){
-        Optional<RegistroDia> registrosGerais = registrosDiaRepository.findById(id);
+        Optional<RegistrosDia> registrosGerais = registrosDiaRepository.findById(id);
         registrosDiaRepository.delete(registrosGerais.get());
     }
     
@@ -114,5 +114,16 @@ public class RegistrosService {
             Logger.getLogger(RegistrosService.class.getName()).log(Level.SEVERE, null, ex);
         }
         return registros;      
+    }
+    
+    public Page<Registros> buscarListaDeRegistrosIncompletos(Pageable pageable){
+        Page<Registros> listaDeRegistros = null;
+        try {
+            listaDeRegistros = registrosRepository.listarRegistrosIncompletos(usuarioSessao.getUsuario(), pageable);
+        } catch (Exception ex) {
+            Logger.getLogger(RegistrosService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listaDeRegistros;
+        
     }
 }

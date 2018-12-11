@@ -5,7 +5,6 @@
  */
 package br.thirdimension.pontoaponto.controller;
 
-import br.thirdimension.pontoaponto.dto.MeusRegistrosDto;
 import br.thirdimension.pontoaponto.dto.PagerModel;
 import br.thirdimension.pontoaponto.dto.RegistrosDto;
 import br.thirdimension.pontoaponto.exception.PesquisarException;
@@ -58,12 +57,12 @@ public class MeusRegistrosController {
     }
 
     @GetMapping("/pesquisar")
-    public String pesquisarRegistros(Model model, @QueryParam("dataInicial") Optional<Long> dataInicial, @QueryParam("dataFinal") Optional<Long> dataFinal, @QueryParam("pageSize") Optional<Integer> pageSize, @QueryParam("page") Optional<Integer> page) {
+    public String pesquisarRegistros(Model model, @QueryParam("dataInicial") Optional<Long> dataInicial, @QueryParam("dataFinal") Optional<Long> dataFinal, @QueryParam("incompletos") Optional<Boolean> incompletos, @QueryParam("pageSize") Optional<Integer> pageSize, @QueryParam("page") Optional<Integer> page) {
         int evalPageSize = pageSize.orElse(INITIAL_PAGE_SIZE);
         int evalPage = (page.orElse(0) < 1) ? INITIAL_PAGE : page.get() - 1;
         List<RegistrosDto> registrosGerais = new ArrayList<>();
         try {
-            registrosGerais = meusRegistrosNegocio.buscarListaDeRegistrosFiltrada(dataInicial.orElse(0L), dataFinal.orElse(0L), new PageRequest(evalPage, evalPageSize, Sort.Direction.DESC, "dataRegistro"));
+            registrosGerais = meusRegistrosNegocio.buscarListaDeRegistrosFiltrada(dataInicial.orElse(0L), dataFinal.orElse(0L), incompletos.get(), new PageRequest(evalPage, evalPageSize, Sort.Direction.DESC, "dataRegistro"));
         } catch (PesquisarException ex) {
             Logger.getLogger(MeusRegistrosController.class.getName()).log(Level.SEVERE, null, ex);
         }

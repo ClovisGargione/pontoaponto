@@ -35,4 +35,7 @@ public interface RegistrosRepository extends PagingAndSortingRepository<Registro
     
     @Query("SELECT r FROM Registros r WHERE r.dataRegistro = ?1 AND r.usuario = ?2")
     Registros buscarUltimoRegistroInserido(LocalDate dataAtual, Usuario usuario);
+    
+    @Query("SELECT r FROM Registros r WHERE r.usuario = ?1 and MOD((select count(d) from RegistrosDia d where d.registros = r),2) != 0")
+    Page<Registros> listarRegistrosIncompletos(Usuario usuario, Pageable pageable);
 }

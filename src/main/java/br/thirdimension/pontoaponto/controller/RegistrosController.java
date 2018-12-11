@@ -10,7 +10,6 @@ import br.thirdimension.pontoaponto.dto.GraficoParametros;
 import br.thirdimension.pontoaponto.dto.RegistrosDto;
 import br.thirdimension.pontoaponto.negocio.RegistrosNegocio;
 import br.thirdimension.pontoaponto.service.RegistrosService;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
