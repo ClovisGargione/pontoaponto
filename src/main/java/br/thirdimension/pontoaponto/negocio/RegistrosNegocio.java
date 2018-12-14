@@ -21,6 +21,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -212,6 +213,7 @@ public class RegistrosNegocio {
             }
         }
         List<RegistroDiaDto> registrosDiaDto = converterListaEntidadeEmListaDto(registro.getRegistrosDia());
+        Collections.sort(registrosDiaDto);
         RegistrosDto registrosDto = new RegistrosDto(registro.getID(), conversor.localDateParaString(registro.getDataRegistro()), registro.getDataRegistro(), registrosDiaDto);
         return registrosDto;
     }

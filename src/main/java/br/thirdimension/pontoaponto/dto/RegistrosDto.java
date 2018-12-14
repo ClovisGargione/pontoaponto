@@ -22,6 +22,8 @@ public class RegistrosDto implements Comparable<RegistrosDto>{
     
     private List<RegistroDiaDto> hora;
     
+    private DadosBarraDeProgressoDto barraDeProgressoDto;
+    
 
     public RegistrosDto(Long id, String dataRegistroFormatada, LocalDate dataRegistro, List<RegistroDiaDto> hora) {
         this.id = id;
@@ -78,6 +80,14 @@ public class RegistrosDto implements Comparable<RegistrosDto>{
         return getDataRegistro().compareTo(o.getDataRegistro());
     }
 
+    public DadosBarraDeProgressoDto getBarraDeProgressoDto() {
+        return barraDeProgressoDto;
+    }
+
+    public void setBarraDeProgressoDto(DadosBarraDeProgressoDto barraDeProgressoDto) {
+        this.barraDeProgressoDto = barraDeProgressoDto;
+    }
+    
     @Override
     public String toString() {
         return "'{" + '"' + "id" + '"' + ":" + id + ", "

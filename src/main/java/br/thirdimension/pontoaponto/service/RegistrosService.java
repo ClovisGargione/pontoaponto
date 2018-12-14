@@ -5,8 +5,8 @@
  */
 package br.thirdimension.pontoaponto.service;
 
-import br.thirdimension.pontoaponto.model.RegistrosDia;
 import br.thirdimension.pontoaponto.model.Registros;
+import br.thirdimension.pontoaponto.model.RegistrosDia;
 import br.thirdimension.pontoaponto.model.Usuario;
 import br.thirdimension.pontoaponto.repository.RegistrosDiaRepository;
 import br.thirdimension.pontoaponto.repository.RegistrosRepository;
@@ -66,7 +66,7 @@ public class RegistrosService {
         registrosDiaRepository.delete(registrosGerais.get());
     }
     
-    public Page<Registros> buscarListaDeRegistrosDoUsuario(Pageable pageable){
+    public Page<Registros> buscarListaDeRegistros(Pageable pageable){
         Page<Registros> listaDeRegistros = null;
         try{
            listaDeRegistros = registrosRepository.findByUsuario(usuarioSessao.getUsuario(), pageable);
@@ -125,5 +125,35 @@ public class RegistrosService {
         }
         return listaDeRegistros;
         
+    }
+    
+    public Page<Registros> buscarListaDeRegistrosIncompletosEntreDatas(LocalDate dataInicial, LocalDate dataFinal, Pageable pageable){
+        Page<Registros> listaDeRegistros = null;
+        try {
+            listaDeRegistros = registrosRepository.listarRegistrosIncompletosEntreDatasPorUsuario(dataInicial, dataFinal, usuarioSessao.getUsuario(), pageable);
+        } catch (Exception ex) {
+            Logger.getLogger(RegistrosService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listaDeRegistros;
+    }
+    
+    public Page<Registros> buscarListaRegistrosIncompletosApartirDaData(LocalDate dataInicial, Pageable pageable){
+        Page<Registros> listaDeRegistros = null;
+        try {
+            listaDeRegistros = registrosRepository.listarRegistrosIncompletosApartirDaData(dataInicial, usuarioSessao.getUsuario(), pageable);
+        } catch (Exception ex) {
+            Logger.getLogger(RegistrosService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listaDeRegistros;
+    }
+    
+    public Page<Registros> buscarListaRegistrosIncompletosAteAData(LocalDate dataFinal, Pageable pageable){
+        Page<Registros> listaDeRegistros = null;
+        try {
+            listaDeRegistros = registrosRepository.listarRegistrosIncompletosAteAData(dataFinal, usuarioSessao.getUsuario(), pageable);
+        } catch (Exception ex) {
+            Logger.getLogger(RegistrosService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listaDeRegistros;
     }
 }

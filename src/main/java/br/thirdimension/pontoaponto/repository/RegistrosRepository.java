@@ -24,6 +24,9 @@ public interface RegistrosRepository extends PagingAndSortingRepository<Registro
     @Query("SELECT r FROM Registros r WHERE r.usuario = ?1")
     Page<Registros> findByUsuario(Usuario usuario, Pageable pageable);
     
+    @Query("SELECT r FROM Registros r WHERE r.dataRegistro = ?1 AND r.usuario = ?2")
+    Registros buscarUltimoRegistroInserido(LocalDate dataAtual, Usuario usuario);
+    
     @Query("SELECT r FROM Registros r WHERE r.dataRegistro BETWEEN ?1 AND ?2 AND r.usuario = ?3")
     Page<Registros> listarRegistroEntreDatasPorUsuario(LocalDate dataInicial, LocalDate dataFinal, Usuario usuario, Pageable pageable);
     
@@ -31,11 +34,19 @@ public interface RegistrosRepository extends PagingAndSortingRepository<Registro
     Page<Registros> listarRegistrosApartirDaData(LocalDate dataInicial, Usuario usuario, Pageable pageable);
     
     @Query("SELECT r FROM Registros r WHERE r.dataRegistro < ?1 AND r.usuario = ?2")
-    Page<Registros> listarRegistrosAteAData(LocalDate dataFinal, Usuario usuario, Pageable pageable);
+    Page<Registros> listarRegistrosAteAData(LocalDate dataFinal, Usuario usuario, Pageable pageable);  
     
-    @Query("SELECT r FROM Registros r WHERE r.dataRegistro = ?1 AND r.usuario = ?2")
-    Registros buscarUltimoRegistroInserido(LocalDate dataAtual, Usuario usuario);
+    @Query("SELECT r FROM Registros r WHERE r.dataRegistro BETWEEN ?1 AND ?2 AND r.usuario = ?3 AND MOD((select count(d) from RegistrosDia d where d.registros = r),2) != 0")
+    Page<Registros> listarRegistrosIncompletosEntreDatasPorUsuario(LocalDate dataInicial, LocalDate dataFinal, Usuario usuario, Pageable pageable);
+    
+    @Query("SELECT r FROM Registros r WHERE r.dataRegistro > ?1 AND r.usuario = ?2 AND MOD((select count(d) from RegistrosDia d where d.registros = r),2) != 0")
+    Page<Registros> listarRegistrosIncompletosApartirDaData(LocalDate dataInicial, Usuario usuario, Pageable pageable);
+    
+    @Query("SELECT r FROM Registros r WHERE r.dataRegistro < ?1 AND r.usuario = ?2 AND MOD((select count(d) from RegistrosDia d where d.registros = r),2) != 0")
+    Page<Registros> listarRegistrosIncompletosAteAData(LocalDate dataFinal, Usuario usuario, Pageable pageable);  
     
     @Query("SELECT r FROM Registros r WHERE r.usuario = ?1 and MOD((select count(d) from RegistrosDia d where d.registros = r),2) != 0")
     Page<Registros> listarRegistrosIncompletos(Usuario usuario, Pageable pageable);
+    
+    
 }

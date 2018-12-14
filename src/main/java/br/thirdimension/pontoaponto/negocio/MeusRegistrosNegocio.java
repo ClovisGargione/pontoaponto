@@ -5,6 +5,7 @@
  */
 package br.thirdimension.pontoaponto.negocio;
 
+import br.thirdimension.pontoaponto.dto.DadosBarraDeProgressoDto;
 import br.thirdimension.pontoaponto.dto.PagerModel;
 import br.thirdimension.pontoaponto.dto.RegistroDiaDto;
 import br.thirdimension.pontoaponto.dto.RegistrosDto;
@@ -13,8 +14,11 @@ import br.thirdimension.pontoaponto.model.Registros;
 import br.thirdimension.pontoaponto.model.RegistrosDia;
 import br.thirdimension.pontoaponto.service.RegistrosService;
 import br.thirdimension.pontoaponto.uteis.Conversores;
+import br.thirdimension.pontoaponto.uteis.UsuarioSessao;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +41,9 @@ public class MeusRegistrosNegocio {
 
     @Autowired
     private Conversores conversores;
+    
+    @Autowired
+    private UsuarioSessao usuarioSessao;
 
     @Autowired
     private RegistrosService registrosService;
@@ -44,7 +51,7 @@ public class MeusRegistrosNegocio {
     private PagerModel pagerModel;
     
     public List<RegistrosDto> buscarListaDeRegistrosAgrupadaPorData(PageRequest pageRequest) {
-        Page<Registros> registros = registrosService.buscarListaDeRegistrosDoUsuario(pageRequest);
+        Page<Registros> registros = registrosService.buscarListaDeRegistros(pageRequest);
         List<RegistrosDto> meusRegistros = new ArrayList<>();
         meusRegistros = converterEntidadeRegistrosParaDto(registros.getContent());
         this.pagerModel = new PagerModel(registros.getTotalPages(), registros.getNumber(), BUTTONS_TO_SHOW, registros.getTotalPages(), registros.getNumber());
@@ -58,20 +65,36 @@ public class MeusRegistrosNegocio {
     public List<RegistrosDto> buscarListaDeRegistrosFiltrada(Long dataInicialLong, Long dataFinalLong, boolean incompletos, PageRequest pageRequest) throws PesquisarException{
         List<RegistrosDto> meusRegistrosDto = new ArrayList<>();
         Page<Registros> meusRegistros = Page.empty();
-        if(dataInicialLong != 0L && dataFinalLong != 0L){
+        if(dataInicialLong != 0L && dataFinalLong != 0L && !incompletos){
             LocalDate dataInicial = Instant.ofEpochMilli(dataInicialLong).atZone(ZoneId.systemDefault()).toLocalDate();
             LocalDate dataFinal = Instant.ofEpochMilli(dataFinalLong).atZone(ZoneId.systemDefault()).toLocalDate();
             meusRegistros = registrosService.buscarListaDeRegistrosEntreDatasPorUsuario(dataInicial, dataFinal, pageRequest);
         }
-        if(dataInicialLong != 0L && dataFinalLong == 0L){
+        if(dataInicialLong != 0L && dataFinalLong == 0L && !incompletos){
             LocalDate dataInicial = Instant.ofEpochMilli(dataInicialLong).atZone(ZoneId.systemDefault()).toLocalDate();
             meusRegistros = registrosService.buscarListaDeRegistrosApartirDaData(dataInicial, pageRequest);
         }
-        if(dataInicialLong == 0L && dataFinalLong != 0L){
+        if(dataInicialLong == 0L && dataFinalLong != 0L && !incompletos){
             LocalDate dataFinal = Instant.ofEpochMilli(dataFinalLong).atZone(ZoneId.systemDefault()).toLocalDate();
             meusRegistros = registrosService.buscarListaDeRegistrosAteAData(dataFinal, pageRequest);
         }
-        if(incompletos){
+        if(dataInicialLong == 0L && dataFinalLong == 0L && !incompletos){
+            meusRegistros = registrosService.buscarListaDeRegistros(pageRequest);
+        }
+        if(dataInicialLong != 0L && dataFinalLong != 0L && incompletos){
+            LocalDate dataInicial = Instant.ofEpochMilli(dataInicialLong).atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate dataFinal = Instant.ofEpochMilli(dataFinalLong).atZone(ZoneId.systemDefault()).toLocalDate();
+            meusRegistros = registrosService.buscarListaDeRegistrosIncompletosEntreDatas(dataInicial, dataFinal, pageRequest);
+        }
+        if(dataInicialLong != 0L && dataFinalLong == 0L && incompletos){
+            LocalDate dataInicial = Instant.ofEpochMilli(dataInicialLong).atZone(ZoneId.systemDefault()).toLocalDate();
+            meusRegistros = registrosService.buscarListaRegistrosIncompletosApartirDaData(dataInicial, pageRequest);
+        }
+        if(dataInicialLong == 0L && dataFinalLong != 0L && incompletos){
+            LocalDate dataFinal = Instant.ofEpochMilli(dataFinalLong).atZone(ZoneId.systemDefault()).toLocalDate();
+            meusRegistros = registrosService.buscarListaRegistrosIncompletosAteAData(dataFinal, pageRequest);
+        }
+        if(dataInicialLong == 0L && dataFinalLong == 0L && incompletos){
             meusRegistros = registrosService.buscarListaDeRegistrosIncompletos(pageRequest);
         }
         try{
@@ -109,15 +132,51 @@ public class MeusRegistrosNegocio {
         return meusRegistros_;
     }
 */
+    private DadosBarraDeProgressoDto calcularDadosBarraDeProgresso(List<RegistroDiaDto> registrosDiaDto){
+        DadosBarraDeProgressoDto dadosBarraDeProgressoDto = new DadosBarraDeProgressoDto(0, 0, 0);
+        if(registrosDiaDto.size() % 2 != 0){
+            dadosBarraDeProgressoDto.setFaltante(100);
+        }else{
+            int jornadaDeTrabalho = conversores.converterHoraParaMinutos(usuarioSessao.getUsuario().getJornadaDeTrabalho().getHour(), usuarioSessao.getUsuario().getJornadaDeTrabalho().getMinute());
+            int trabalhadas = getTotalSomaHorasTrabalhadasEmMinutos(registrosDiaDto);
+            dadosBarraDeProgressoDto.setHorasTrabalhadas(trabalhadas);
+            if(jornadaDeTrabalho > trabalhadas){
+                int faltantes = jornadaDeTrabalho - trabalhadas;
+                dadosBarraDeProgressoDto.setFaltante(faltantes);
+            }else{
+                int extra = trabalhadas - jornadaDeTrabalho;
+                dadosBarraDeProgressoDto.setExtra(extra);
+            }
+        }
+        return dadosBarraDeProgressoDto;        
+    }
+    
+    private int getTotalSomaHorasTrabalhadasEmMinutos(List<RegistroDiaDto> registrosDiaDto) {
+        Duration diff = null;
+        LocalTime tempoTrabalhado = LocalTime.MIN;
+        for (int index = 0; index < registrosDiaDto.size(); index += 2) {
+            diff = Duration.between(registrosDiaDto.get(index).getHora(), registrosDiaDto.get(index + 1).getHora());
+            int hours = (int) (diff.toMinutes() / 60);
+            int minutes = (int) (diff.toMinutes() % 60);
+            tempoTrabalhado = tempoTrabalhado.plusHours(hours);
+            tempoTrabalhado = tempoTrabalhado.plusMinutes(minutes);
+        }
+        return conversores.converterHoraParaMinutos(tempoTrabalhado.getHour(), tempoTrabalhado.getMinute());
+    }
 
     private List<RegistrosDto> converterEntidadeRegistrosParaDto(List<Registros> registros) {
         List<RegistroDiaDto> registrosDiaDto = null;
         List<RegistrosDto> registrosDto = new ArrayList<>();
+        DadosBarraDeProgressoDto barraDeProgressoDto = new DadosBarraDeProgressoDto();
+        RegistrosDto registroDto = new RegistrosDto();
         for(Registros registro : registros){
             registrosDiaDto = new ArrayList<>();
             registrosDiaDto = converterListaRegistroDiaParaDto(registro.getRegistrosDia());
             Collections.sort(registrosDiaDto);
-            registrosDto.add(new RegistrosDto(registro.getID(), conversores.localDateParaString(registro.getDataRegistro()), registro.getDataRegistro(), registrosDiaDto));
+            barraDeProgressoDto = calcularDadosBarraDeProgresso(registrosDiaDto);
+            registroDto = new RegistrosDto(registro.getID(), conversores.localDateParaString(registro.getDataRegistro()), registro.getDataRegistro(), registrosDiaDto);
+            registroDto.setBarraDeProgressoDto(barraDeProgressoDto);
+            registrosDto.add(registroDto);
         }      
         return registrosDto;
     }

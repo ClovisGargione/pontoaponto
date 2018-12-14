@@ -8,7 +8,9 @@ $(document).ready(function () {
         format: 'dd/mm/yyyy',
         language: 'pt-BR'
     });
-   $('[data-toggle="tooltip"]').tooltip();
+   $('[data-toggle="popover"]').popover({
+        trigger: 'hover'
+    });
 });
 
 function changePageAndSize() {
@@ -40,17 +42,13 @@ function montarUrlPesquisa(){
     var dataInicial = document.getElementById('dataInicial');
     var dataFinal = document.getElementById('dataFinal');
     var todos = document.getElementById('todos');
-    var horaPositiva = document.getElementById('horaPositiva');
-    var horaNegativa = document.getElementById('horaNegativa');
     var incompletos = document.getElementById('incompletos');
     var dataInicialParam = dataInicial.value;
     var dataFinalParam = dataFinal.value;
     var todosParam = todos.checked;
-    var horaPositivaParam = horaPositiva.checked;
-    var horaNegativaParam = horaNegativa.checked;
     var incompletosParam = incompletos.checked;
     var filtro = {};
-    var urlParametros = "todos=" + todosParam + "&" + "horaPositiva=" + horaPositivaParam + "&" + "horaNegativa=" + horaNegativaParam + "&" + "incompletos=" + incompletosParam;
+    var urlParametros = "todos=" + todosParam + "&" + "incompletos=" + incompletosParam;
     if (dataInicialParam) {
         dataInicialParam = moment(dataInicialParam, "DD/MM/YYYY").valueOf();
         filtro.dataInicial = dataInicialParam;

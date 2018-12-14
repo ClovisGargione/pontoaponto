@@ -168,3 +168,19 @@ html, body{
     background-color: transparent !important;
     -webkit-text-decoration-skip: objects;
 }
+
+.cursor-pointer{
+    cursor: pointer;
+}
+
+.barra-horas-trabalhadas{
+    background-color: #91c5f2 !important;
+}
+
+.barra-horas-restantes{
+    background-color: #ffdb85 !important;
+}
+
+.barra-horas-extras{
+    background-color: rgba(1, 223, 58, 0.2) !important;
+}

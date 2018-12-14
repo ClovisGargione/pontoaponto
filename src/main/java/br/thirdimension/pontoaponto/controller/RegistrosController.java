@@ -57,12 +57,8 @@ public class RegistrosController {
     
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Object> registroManual(@RequestBody String registro){
-        String horaString[] = registro.split(":");
-        int hora[] = new int[2];
-        hora[0] = Integer.parseInt(horaString[0]);
-        hora[1] = Integer.parseInt(horaString[1]);
         try {
-            registrosService.inserirRegistroDiaManual(LocalTime.of(hora[0], hora[1]));
+            registrosService.inserirRegistroDiaManual(LocalTime.parse(registro));
         } catch (Exception ex) {
             Logger.getLogger(RegistrosController.class.getName()).log(Level.SEVERE, null, ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
