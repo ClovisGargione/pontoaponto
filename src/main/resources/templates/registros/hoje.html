@@ -55,13 +55,13 @@
         <div layout:fragment="content" class="container">
             <div class="card shadow">
                 <div class="card-block padding-card-button">
-                    <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#registroManualModal"><i class="fa fa-hand-pointer-o"></i> Registro manual</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" th:onclick="'getRegistroId('+${registros.id}+')'" data-toggle="modal" data-target="#registroManualModal"><i class="fa fa-hand-pointer-o"></i> Registro manual</button>
                 </div>
             </div>
             <br>
             <div class="card shadow">
                 <h4 class="card-header">
-                    <i class="fa fa-clock-o"></i>  <span>Registros de hoje</span>
+                    <i class="fa fa-clock-o"></i>  <span th:text="${cardLabel}"></span>
                 </h4>
                 <div class="card-block padding-card">
                     <span class="row">
@@ -99,7 +99,7 @@
                             <label th:text="${diaDeTrabalho.labelExtrasNegativas}"></label>
                             <label th:class="${diaDeTrabalho.extra} ? horas_extras : horas_restantes" style="font-weight: bold" th:text="${diaDeTrabalho.tempoFaltanteExtraFormatado}"></label>
                         </div>
-                        <div class="col-4">
+                        <div class="col-4" th:if="${diaCorrente}">
                             <label>Fim da jornada de trabalho:</label>
                             <label class="fim_jornada" th:text="${diaDeTrabalho.horaSaidaFormatada}"></label>
                         </div>

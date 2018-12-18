@@ -7,6 +7,7 @@ package br.thirdimension.pontoaponto.controller;
 
 import br.thirdimension.pontoaponto.dto.DiaDeTrabalho;
 import br.thirdimension.pontoaponto.dto.GraficoParametros;
+import br.thirdimension.pontoaponto.dto.RegistroManualDto;
 import br.thirdimension.pontoaponto.dto.RegistrosDto;
 import br.thirdimension.pontoaponto.negocio.RegistrosNegocio;
 import br.thirdimension.pontoaponto.service.RegistrosService;
@@ -31,49 +32,68 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/registros")
 public class RegistrosController {
-    
+
     private static final String REGISTROS_URI = "registros/hoje";
-    
+
     @Autowired
     private RegistrosNegocio registrosNegocio;
-    
+
     @Autowired
     private RegistrosService registrosService;
-    
+
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView hoje() {
         ModelAndView mv = new ModelAndView(REGISTROS_URI);
         RegistrosDto registros = registrosNegocio.filtrarRegistrosParaDataAtual();
         DiaDeTrabalho diaDeTrabalho = registrosNegocio.calcularTempoTrabalhadoPorJornadaTrabalho(registros);
         GraficoParametros graficoParametros = registrosNegocio.definirParametrosGrafico(diaDeTrabalho);
-            if(registros.getHora().size() > 1 && registros.getHora().get(registros.getHora().size()-1).getId() == null ){
-                registros.getHora().remove(registros.getHora().size()-1);
-            }
+        if (registros.getHora().size() > 1 && registros.getHora().get(registros.getHora().size() - 1).getId() == null) {
+            registros.getHora().remove(registros.getHora().size() - 1);
+        }
         mv.addObject("diaDeTrabalho", diaDeTrabalho);
         mv.addObject("graficoParametros", graficoParametros);
+        mv.addObject("diaCorrente", true);
+        mv.addObject("cardLabel", "Registros de hoje");
         mv.addObject("registros", registros);
         return mv;
     }
-    
+
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Object> registroManual(@RequestBody String registro){
+    public ResponseEntity<Object> registroManual(@RequestBody RegistroManualDto registro) {
         try {
-            registrosService.inserirRegistroDiaManual(LocalTime.parse(registro));
+            registrosService.inserirRegistroDiaManual(registro.getRegistroId(), LocalTime.parse(registro.getRegistroDia()));
         } catch (Exception ex) {
             Logger.getLogger(RegistrosController.class.getName()).log(Level.SEVERE, null, ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         return ResponseEntity.ok().build();
     }
-    
+
     @DeleteMapping(path = "/remover/{id}")
-    public ResponseEntity<Object> removerRegistro(@PathVariable("id") long id){
+    public ResponseEntity<Object> removerRegistro(@PathVariable("id") long id) {
         try {
-        registrosService.removerRegistroDia(id);
+            registrosService.removerRegistroDia(id);
         } catch (Exception ex) {
             Logger.getLogger(RegistrosController.class.getName()).log(Level.SEVERE, null, ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(path = "/editar/{id}", method = RequestMethod.GET)
+    public ModelAndView editar(@PathVariable("id") long id) {
+        ModelAndView mv = new ModelAndView(REGISTROS_URI);
+        RegistrosDto registros = registrosNegocio.filtrarRegistrosPorId(id);
+        DiaDeTrabalho diaDeTrabalho = registrosNegocio.calcularTempoTrabalhadoPorJornadaTrabalho(registros);
+        GraficoParametros graficoParametros = registrosNegocio.definirParametrosGrafico(diaDeTrabalho);
+        if (registros.getHora().size() > 1 && registros.getHora().get(registros.getHora().size() - 1).getId() == null) {
+            registros.getHora().remove(registros.getHora().size() - 1);
+        }
+        mv.addObject("diaDeTrabalho", diaDeTrabalho);
+        mv.addObject("graficoParametros", graficoParametros);
+        mv.addObject("diaCorrente", false);
+        mv.addObject("cardLabel", "Registros de " + registros.getDataRegistroFormatada());
+        mv.addObject("registros", registros);
+        return mv;
     }
 }

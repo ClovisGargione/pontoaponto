@@ -13,7 +13,7 @@ import java.util.List;
  * @author clovis.rodrigues
  */
 public class RegistrosDto implements Comparable<RegistrosDto>{
-
+    
     private Long id;
 
     private String dataRegistroFormatada;
@@ -88,12 +88,16 @@ public class RegistrosDto implements Comparable<RegistrosDto>{
         this.barraDeProgressoDto = barraDeProgressoDto;
     }
     
+    public boolean isMostrarAvisoRegistroIncompleto(){
+        return !dataRegistro.isEqual(LocalDate.now());
+    }
+    
+    
     @Override
     public String toString() {
         return "'{" + '"' + "id" + '"' + ":" + id + ", "
                     + '"' + "dataRegistroFormatada" + '"' + ":" + '"' + dataRegistroFormatada + '"' + ", "
-                    + '"' + "dataRegistro" + '"' + ":" + '"' + dataRegistro + '"' + ", "
-                    + '"' + "hora" + '"' + ":" + '"' + hora + '"'
+                    + '"' + "dataRegistro" + '"' + ":" + '"' + dataRegistro + '"' 
                     + "}'";
     }
 }

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html layout:decorate="~{layouts/layout}">
+    <head>
+        <script type="text/javascript" th:inline="javascript">
+            $(document).ready(function () {
+                var randomScalingFactor = function () {
+                    return Math.round(Math.random() * 10);
+                };
+                var ctx = document.getElementById("myChart").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [[${graficoParams.labels}]],
+                        datasets: [
+                            {
+                                label: 'Horas negativas',
+                                fill: false,
+                                backgroundColor: "red",
+                                borderColor: "red",
+                                data: [[${graficoNegativa.datasetsData}]],
+                            },
+                            {
+                                label: 'Horas positivas',
+                                fill: false,
+                                backgroundColor: "blue",
+                                borderColor: "blue",
+                                data: [[${graficoExtra.datasetsData}]],
+
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        title: {
+                            display: true,
+                            text: 'Total'
+                        },
+                        tooltips: {
+                            mode: 'index',
+                            intersect: false,
+
+                        },
+                        hover: {
+                            mode: 'nearest',
+                            intersect: true
+                        },
+                        scales: {
+                            xAxes: [
+                                {
+                                    display: true,
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Dias'
+                                    }
+                                }
+                            ],
+                            yAxes: [
+                                {
+                                    display: true,
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Horas'
+                                    },
+                                    ticks: {
+                                        min: 0,
+                                        max: 8.5,
+                                        // forces step size to be 10 units 
+                                        stepSize: 0.5
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                });
+            });
+        </script>
+    </head>
+    <body class="background-default">
+        <div layout:fragment="header">
+            <br/>
+        </div>
+        <div layout:fragment="content" class="container">
+            <br>
+            <div class="card shadow">
+                <h4 class="card-header">
+                    <i class="fa fa-history"></i> Banco de horas
+                </h4>
+                <div class="card-body">
+                    <div class="jumbotron" style="padding: 10px; margin-bottom:0; margin-top: 0">
+                        <h5>Banco de horas total</h5>
+                        <div class="row align-items-center h-100">
+                            <div class="col-12 d-flex justify-content-center">
+                                <canvas id="myChart" style="width: 50%; height: auto;"></canvas>
+                            </div>
+                        </div>
+                        <hr class="my-3">
+                        <div class="row align-items-center h-100">
+                            <div class="col-4 align-middle">
+                                <label>Total horas trabalhadas:</label>
+                                <label class="horas_trabalhadas" th:text="${bancoDeHoras.totalFormatado}"></label>
+                            </div>
+                            <div class="col-4 align-middle">
+                                <label>Total horas negativas:</label>
+                                <label class="horas_restantes" th:text="${bancoDeHoras.negativasFormatado}"></label>
+                            </div>
+                            <div class="col-4 align-middle">
+                                <label>Total horas extras:</label>
+                                <label class="horas_extras" th:text="${bancoDeHoras.extrasFormatado}"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

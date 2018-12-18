@@ -68,6 +68,17 @@ public class RegistrosNegocio {
         return registros;
     }
     
+    public RegistrosDto filtrarRegistrosPorId(long id){
+        Registros registro =  registrosService.buscarRegistroPorId(id);
+        List<RegistroDiaDto> registrosDiaDto = converterListaEntidadeEmListaDto(registro.getRegistrosDia());
+        Collections.sort(registrosDiaDto);
+        RegistrosDto registrosDto = new RegistrosDto(registro.getID(), conversor.localDateParaString(registro.getDataRegistro()), registro.getDataRegistro(), registrosDiaDto);
+        if (necessitaIncluirRegistroParaCalculo(registrosDto.getHora())) {
+            adicionarRegistroParaCalculo(registrosDto.getHora());
+        }
+        return registrosDto;
+    }
+    
     /**
      * Calcula o tempo trabalhado sobre a jornada de trabalho
      * @param listaRegistros - registros de ponto do dia

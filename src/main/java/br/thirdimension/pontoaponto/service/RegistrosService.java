@@ -14,6 +14,8 @@ import br.thirdimension.pontoaponto.repository.UsuarioRepository;
 import br.thirdimension.pontoaponto.uteis.UsuarioSessao;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,55 +30,55 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class RegistrosService {
-    
+
     @Autowired
     private UsuarioSessao usuarioSessao;
-    
+
     @Autowired
     private RegistrosRepository registrosRepository;
-    
+
     @Autowired
     private RegistrosDiaRepository registrosDiaRepository;
-    
+
     @Autowired
     private UsuarioRepository usuarioRepository;
-        
-    public Registros inserirRegistroManual(LocalDate data) throws Exception{
+
+    public Registros inserirRegistroManual(LocalDate data) throws Exception {
         Optional<Usuario> usuario = usuarioRepository.findById(usuarioSessao.getUsuario().getId());
         Registros registrosGerais = new Registros(data, usuarioSessao.getUsuario());
         usuario.get().getRegistros().add(registrosGerais);
         registrosRepository.save(registrosGerais);
         return registrosGerais;
     }
-    
-    public Registros inserirRegistroDiaManual(LocalTime hora) throws Exception{
-        Registros registro = registrosRepository.buscarUltimoRegistroInserido(LocalDate.now(), usuarioSessao.getUsuario());
-        registro.getRegistrosDia().add(new RegistrosDia(hora, registro));
-        registrosRepository.save(registro);
-        return registro;
+
+    public Registros inserirRegistroDiaManual(Long id, LocalTime hora) throws Exception {
+        Optional<Registros> registro = registrosRepository.findById(id);
+        registro.get().getRegistrosDia().add(new RegistrosDia(hora, registro.get()));
+        registrosRepository.save(registro.get());
+        return registro.get();
     }
-    
-    public void removerRegistro(long id){
+
+    public void removerRegistro(long id) {
         Optional<Registros> registrosGerais = registrosRepository.findById(id);
         registrosRepository.delete(registrosGerais.get());
     }
-    
-    public void removerRegistroDia(long id){
+
+    public void removerRegistroDia(long id) {
         Optional<RegistrosDia> registrosGerais = registrosDiaRepository.findById(id);
         registrosDiaRepository.delete(registrosGerais.get());
     }
-    
-    public Page<Registros> buscarListaDeRegistros(Pageable pageable){
+
+    public Page<Registros> buscarListaDeRegistros(Pageable pageable) {
         Page<Registros> listaDeRegistros = null;
-        try{
-           listaDeRegistros = registrosRepository.findByUsuario(usuarioSessao.getUsuario(), pageable);
-        }catch(Exception ex){
+        try {
+            listaDeRegistros = registrosRepository.findByUsuario(usuarioSessao.getUsuario(), pageable);
+        } catch (Exception ex) {
             Logger.getLogger(RegistrosService.class.getName()).log(Level.SEVERE, null, ex);
         }
         return listaDeRegistros;
     }
-    
-    public Page<Registros> buscarListaDeRegistrosEntreDatasPorUsuario(LocalDate dataInicial, LocalDate dataFinal, Pageable pageable){
+
+    public Page<Registros> buscarListaDeRegistrosEntreDatasPorUsuario(LocalDate dataInicial, LocalDate dataFinal, Pageable pageable) {
         Page<Registros> listaDeRegistros = null;
         try {
             listaDeRegistros = registrosRepository.listarRegistroEntreDatasPorUsuario(dataInicial, dataFinal, usuarioSessao.getUsuario(), pageable);
@@ -85,8 +87,8 @@ public class RegistrosService {
         }
         return listaDeRegistros;
     }
-    
-    public Page<Registros> buscarListaDeRegistrosApartirDaData(LocalDate dataInicial, Pageable pageable){
+
+    public Page<Registros> buscarListaDeRegistrosApartirDaData(LocalDate dataInicial, Pageable pageable) {
         Page<Registros> listaDeRegistros = null;
         try {
             listaDeRegistros = registrosRepository.listarRegistrosApartirDaData(dataInicial, usuarioSessao.getUsuario(), pageable);
@@ -95,8 +97,8 @@ public class RegistrosService {
         }
         return listaDeRegistros;
     }
-    
-    public Page<Registros> buscarListaDeRegistrosAteAData(LocalDate dataFinal, Pageable pageable){
+
+    public Page<Registros> buscarListaDeRegistrosAteAData(LocalDate dataFinal, Pageable pageable) {
         Page<Registros> listaDeRegistros = null;
         try {
             listaDeRegistros = registrosRepository.listarRegistrosAteAData(dataFinal, usuarioSessao.getUsuario(), pageable);
@@ -105,18 +107,18 @@ public class RegistrosService {
         }
         return listaDeRegistros;
     }
-        
-    public Registros buscarUltimoRegistroInserido(Usuario usuario){
+
+    public Registros buscarUltimoRegistroInserido(Usuario usuario) {
         Registros registros = null;
         try {
             registros = registrosRepository.buscarUltimoRegistroInserido(LocalDate.now(), usuario);
         } catch (Exception ex) {
             Logger.getLogger(RegistrosService.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return registros;      
+        return registros;
     }
-    
-    public Page<Registros> buscarListaDeRegistrosIncompletos(Pageable pageable){
+
+    public Page<Registros> buscarListaDeRegistrosIncompletos(Pageable pageable) {
         Page<Registros> listaDeRegistros = null;
         try {
             listaDeRegistros = registrosRepository.listarRegistrosIncompletos(usuarioSessao.getUsuario(), pageable);
@@ -124,10 +126,10 @@ public class RegistrosService {
             Logger.getLogger(RegistrosService.class.getName()).log(Level.SEVERE, null, ex);
         }
         return listaDeRegistros;
-        
+
     }
-    
-    public Page<Registros> buscarListaDeRegistrosIncompletosEntreDatas(LocalDate dataInicial, LocalDate dataFinal, Pageable pageable){
+
+    public Page<Registros> buscarListaDeRegistrosIncompletosEntreDatas(LocalDate dataInicial, LocalDate dataFinal, Pageable pageable) {
         Page<Registros> listaDeRegistros = null;
         try {
             listaDeRegistros = registrosRepository.listarRegistrosIncompletosEntreDatasPorUsuario(dataInicial, dataFinal, usuarioSessao.getUsuario(), pageable);
@@ -136,8 +138,8 @@ public class RegistrosService {
         }
         return listaDeRegistros;
     }
-    
-    public Page<Registros> buscarListaRegistrosIncompletosApartirDaData(LocalDate dataInicial, Pageable pageable){
+
+    public Page<Registros> buscarListaRegistrosIncompletosApartirDaData(LocalDate dataInicial, Pageable pageable) {
         Page<Registros> listaDeRegistros = null;
         try {
             listaDeRegistros = registrosRepository.listarRegistrosIncompletosApartirDaData(dataInicial, usuarioSessao.getUsuario(), pageable);
@@ -146,11 +148,26 @@ public class RegistrosService {
         }
         return listaDeRegistros;
     }
-    
-    public Page<Registros> buscarListaRegistrosIncompletosAteAData(LocalDate dataFinal, Pageable pageable){
+
+    public Page<Registros> buscarListaRegistrosIncompletosAteAData(LocalDate dataFinal, Pageable pageable) {
         Page<Registros> listaDeRegistros = null;
         try {
             listaDeRegistros = registrosRepository.listarRegistrosIncompletosAteAData(dataFinal, usuarioSessao.getUsuario(), pageable);
+        } catch (Exception ex) {
+            Logger.getLogger(RegistrosService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listaDeRegistros;
+    }
+
+    public Registros buscarRegistroPorId(long id) {
+        Optional<Registros> registro = registrosRepository.findById(id);
+        return registro.get();
+    }
+    
+    public List<Registros> buscarListaRegistrosCompletos() {
+        List<Registros> listaDeRegistros = new ArrayList<>();
+        try {
+            listaDeRegistros = registrosRepository.listarRegistrosCompletosPorUsuario(usuarioSessao.getUsuario());
         } catch (Exception ex) {
             Logger.getLogger(RegistrosService.class.getName()).log(Level.SEVERE, null, ex);
         }

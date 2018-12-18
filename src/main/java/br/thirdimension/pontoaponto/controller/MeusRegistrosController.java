@@ -6,9 +6,12 @@
 package br.thirdimension.pontoaponto.controller;
 
 import br.thirdimension.pontoaponto.dto.PagerModel;
+import br.thirdimension.pontoaponto.dto.RegistroManualDto;
 import br.thirdimension.pontoaponto.dto.RegistrosDto;
 import br.thirdimension.pontoaponto.exception.PesquisarException;
 import br.thirdimension.pontoaponto.negocio.MeusRegistrosNegocio;
+import br.thirdimension.pontoaponto.service.RegistrosService;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,9 +21,14 @@ import javax.ws.rs.QueryParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -41,6 +49,9 @@ public class MeusRegistrosController {
 
     @Autowired
     private MeusRegistrosNegocio meusRegistrosNegocio;
+    
+    @Autowired
+    private RegistrosService registrosService;
 
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView hoje(@QueryParam("pageSize") Optional<Integer> pageSize, @QueryParam("page") Optional<Integer> page) {
@@ -72,6 +83,28 @@ public class MeusRegistrosController {
         model.addAttribute("pageSizes", PAGE_SIZES);
         model.addAttribute("pager", pager);
         return MEUS_REGISTROS_URI + " :: resultado-pesquisa";
+    }
+    
+    @RequestMapping(path = "/manual", method = RequestMethod.POST)
+    public ResponseEntity<Object> registroManual(@RequestBody RegistroManualDto registro){
+        try {
+            registrosService.inserirRegistroDiaManual(registro.getRegistroId(), LocalTime.parse(registro.getRegistroDia()));
+        } catch (Exception ex) {
+            Logger.getLogger(RegistrosController.class.getName()).log(Level.SEVERE, null, ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+        return ResponseEntity.ok().build();
+    }
+    
+    @DeleteMapping(path = "/remover/{id}")
+    public ResponseEntity<Object> removerRegistro(@PathVariable("id") long id){
+        try {
+        registrosService.removerRegistro(id);
+        } catch (Exception ex) {
+            Logger.getLogger(RegistrosController.class.getName()).log(Level.SEVERE, null, ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+        return ResponseEntity.ok().build();
     }
 
 }

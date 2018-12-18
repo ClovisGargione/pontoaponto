@@ -8,6 +8,7 @@ package br.thirdimension.pontoaponto.repository;
 import br.thirdimension.pontoaponto.model.Registros;
 import br.thirdimension.pontoaponto.model.Usuario;
 import java.time.LocalDate;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -48,5 +49,6 @@ public interface RegistrosRepository extends PagingAndSortingRepository<Registro
     @Query("SELECT r FROM Registros r WHERE r.usuario = ?1 and MOD((select count(d) from RegistrosDia d where d.registros = r),2) != 0")
     Page<Registros> listarRegistrosIncompletos(Usuario usuario, Pageable pageable);
     
-    
+    @Query("SELECT r FROM Registros r WHERE r.usuario = ?1 and MOD((select count(d) from RegistrosDia d where d.registros = r),2) = 0")
+    List<Registros> listarRegistrosCompletosPorUsuario(Usuario usuario);
 }

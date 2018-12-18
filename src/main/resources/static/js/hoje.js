@@ -37,9 +37,14 @@ function limparCampoModal(inputId) {
     campo.value = "";
 }
 
+var idRegistro = 0;
+function getRegistroId(id){
+    idRegistro = id;
+}
+
 function inserirRegistro(inputId) {
     var registro = document.getElementById(inputId).value;
-    //var dataHoraRegistro = horaStringParaDataAtualHora(registro);
+    var data = {registroId: idRegistro, registroDia: registro};
     var opcoesToastr = {timeOut: 500, hideMethod: 'slideUp', showMethod: 'slideDown', preventDuplicates: true, showEasing: "swing", hideEasing: "linear", onHidden: function () {
             location.reload();
         }};
@@ -58,7 +63,7 @@ function inserirRegistro(inputId) {
         },
         async: true,
         contentType: 'application/json',
-        data: registro,
+        data: JSON.stringify(data),
         cache: false,
         processData: false,
         timeout: 60000

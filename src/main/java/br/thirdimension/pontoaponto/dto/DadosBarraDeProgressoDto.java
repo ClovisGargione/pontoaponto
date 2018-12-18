@@ -5,8 +5,8 @@
  */
 package br.thirdimension.pontoaponto.dto;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
@@ -51,5 +51,22 @@ public class DadosBarraDeProgressoDto {
 
     public void setExtra(int extra) {
         this.extra = extra;
+    }
+    
+    public String getTempoTrabalhadoString(){
+        LocalTime localTime = LocalTime.MIN;
+        localTime = localTime.plusMinutes(horasTrabalhadas);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
+        String trabalhadas = "<b>Trab.:</b> " + "<span style='color: #91c5f2'><b>"+localTime.format(dtf)+"</b></span>";
+        if(extra > 0){
+            localTime = LocalTime.MIN;
+            localTime = localTime.plusMinutes(extra);
+            trabalhadas += " <b>Extras:</b> " + "<span style='color: #73dd95'><b>" + localTime.format(dtf) + "</b></span>"; 
+        }if(faltante > 0){
+            localTime = LocalTime.MIN;
+            localTime = localTime.plusMinutes(faltante);
+            trabalhadas += " <b>Negativas:</b> " + "<span style='color: #ffdb85'><b>" + localTime.format(dtf) + "</b></span>"; 
+        }
+        return trabalhadas;
     }
 }
