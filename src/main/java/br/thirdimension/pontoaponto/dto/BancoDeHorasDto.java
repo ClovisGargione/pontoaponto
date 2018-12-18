@@ -19,22 +19,28 @@ public class BancoDeHorasDto {
     
     private LocalTime extras;
     
+    private LocalTime totalBanco;
+    
     private String totalFormatado;
     
     private String negativasFormatado;
     
     private String extrasFormatado;
+    
+    private String totalBancoFormatado;
 
-    public BancoDeHorasDto(LocalTime total, LocalTime negativas, LocalTime extras) {
+    public BancoDeHorasDto(LocalTime total, LocalTime negativas, LocalTime extras, LocalTime totalBanco) {
         this.total = total;
         this.negativas = negativas;
         this.extras = extras;
+        this.totalBanco = totalBanco;
     }
 
-    public BancoDeHorasDto(String totalFormatado, String negativasFormatado, String extrasFormatado) {
+    public BancoDeHorasDto(String totalFormatado, String negativasFormatado, String extrasFormatado, String totalBancoFormatado) {
         this.totalFormatado = totalFormatado;
         this.negativasFormatado = negativasFormatado;
         this.extrasFormatado = extrasFormatado;
+        this.totalBancoFormatado = totalBancoFormatado;
     }
 
     public BancoDeHorasDto(LocalTime total, LocalTime negativas, LocalTime extras, String totalFormatado, String negativasFormatado, String extrasFormatado) {
@@ -96,4 +102,22 @@ public class BancoDeHorasDto {
     public void setExtrasFormatado(String extrasFormatado) {
         this.extrasFormatado = extrasFormatado;
     }
+
+    public LocalTime getTotalBanco() {
+        return totalBanco;
+    }
+
+    public void setTotalBanco(LocalTime totalBanco) {
+        this.totalBanco = totalBanco;
+    }
+
+    public String getTotalBancoFormatado() {
+        return totalBancoFormatado;
+    }
+
+    public void setTotalBancoFormatado(String totalBancoFormatado) {
+        this.totalBancoFormatado = totalBancoFormatado;
+    }
+    
+    
 }

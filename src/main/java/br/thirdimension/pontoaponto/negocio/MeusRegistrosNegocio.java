@@ -205,6 +205,7 @@ public class MeusRegistrosNegocio {
         int[] totalTrabalhado = new int[2];
         int[] totalNegativas = new int[2];
         int[] totalExtras = new int[2];
+        int[] totalBanco = new int[2];
         hours = (int) (total / 60);
         minutes = (int) (total % 60);
         totalTrabalhado = conversores.ajustarMinutos(hours, minutes);
@@ -214,9 +215,23 @@ public class MeusRegistrosNegocio {
         hours = (int) (extra / 60);
         minutes = (int) (extra % 60);
         totalExtras = conversores.ajustarMinutos(hours, minutes);
+        int totBanco = 0;
+        char operador;
+        if(extra > negativa){
+            totBanco = extra - negativa;
+            operador = '+';
+        }else{
+           totBanco = negativa - extra; 
+           operador = '-';
+        }
+                
+        hours = (int) (totBanco / 60);
+        minutes = (int) (totBanco % 60);
+        totalBanco = conversores.ajustarMinutos(hours, minutes);
         bancoDeHorasDto.setTotalFormatado(String.format("%02d", new Object[]{totalTrabalhado[0]}) + ":" + String.format("%02d", new Object[]{totalTrabalhado[1]}));
         bancoDeHorasDto.setNegativasFormatado(String.format("%02d", new Object[]{totalNegativas[0]}) + ":" + String.format("%02d", new Object[]{totalNegativas[1]}));
         bancoDeHorasDto.setExtrasFormatado(String.format("%02d", new Object[]{totalExtras[0]}) + ":" + String.format("%02d", new Object[]{totalExtras[1]}));
+        bancoDeHorasDto.setTotalBancoFormatado(operador + String.format("%02d", new Object[]{totalBanco[0]}) + ":" + String.format("%02d", new Object[]{totalBanco[1]}));
         return bancoDeHorasDto;
     }
 

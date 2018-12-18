@@ -100,17 +100,21 @@ and open the template in the editor.
                         </div>
                         <hr class="my-3">
                         <div class="row align-items-center h-100">
-                            <div class="col-4 align-middle">
+                            <div class="col-3 align-middle">
                                 <label>Total horas trabalhadas:</label>
                                 <label class="horas_trabalhadas" th:text="${bancoDeHoras.totalFormatado}"></label>
                             </div>
-                            <div class="col-4 align-middle">
+                            <div class="col-3 align-middle">
                                 <label>Total horas negativas:</label>
                                 <label class="horas_restantes" th:text="${bancoDeHoras.negativasFormatado}"></label>
                             </div>
-                            <div class="col-4 align-middle">
+                            <div class="col-3 align-middle">
                                 <label>Total horas extras:</label>
                                 <label class="horas_extras" th:text="${bancoDeHoras.extrasFormatado}"></label>
+                            </div>
+                            <div class="col-3 align-middle">
+                                <label>Total banco:</label>
+                                <strong th:text="${bancoDeHoras.totalBancoFormatado}"></strong>
                             </div>
                         </div>
                     </div>
