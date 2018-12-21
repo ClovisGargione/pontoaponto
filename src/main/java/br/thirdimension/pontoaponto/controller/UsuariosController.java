@@ -5,8 +5,8 @@
  */
 package br.thirdimension.pontoaponto.controller;
 
-import br.thirdimension.pontoaponto.dto.CredenciaisDoUsuario;
-import br.thirdimension.pontoaponto.dto.Senha;
+import br.thirdimension.pontoaponto.dto.CredenciaisDoUsuarioDto;
+import br.thirdimension.pontoaponto.dto.SenhaDto;
 import br.thirdimension.pontoaponto.model.Credenciais;
 import br.thirdimension.pontoaponto.model.Usuario;
 import br.thirdimension.pontoaponto.repository.UsuarioRepository;
@@ -49,7 +49,7 @@ public class UsuariosController {
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView cadastro() {
         ModelAndView mv = new ModelAndView("usuarios/formulario");
-        CredenciaisDoUsuario credenciaisDoUsuario = new CredenciaisDoUsuario();
+        CredenciaisDoUsuarioDto credenciaisDoUsuario = new CredenciaisDoUsuarioDto();
         mv.addObject("cabecalho", "Cadastrar usuário");
         mv.addObject("titulo", "Criar um novo usuário");
         mv.addObject("credenciaisDoUsuario", credenciaisDoUsuario);
@@ -64,7 +64,7 @@ public class UsuariosController {
      * @return
      */
     @RequestMapping(method = RequestMethod.POST)
-    public ModelAndView registrar(@Valid CredenciaisDoUsuario credenciaisDoUsuario, BindingResult bindingResult) {
+    public ModelAndView registrar(@Valid CredenciaisDoUsuarioDto credenciaisDoUsuario, BindingResult bindingResult) {
         ModelAndView mv = null;
         if(!credenciaisDoUsuario.getSenha().equals(credenciaisDoUsuario.getConfirmacaoSenha())){
             ObjectError error = new FieldError("credenciaisDoUsuario", "confirmacaoSenha", "Senha e confirmação de senha devem ser iguais");
@@ -98,7 +98,7 @@ public class UsuariosController {
         Usuario usuario = sessao.getUsuario();
         int horas = usuario.getJornadaDeTrabalho().getHour();
         int minutos = usuario.getJornadaDeTrabalho().getMinute();
-        CredenciaisDoUsuario credenciaisDoUsuario = new CredenciaisDoUsuario(usuario.getId(), usuario.getNome(), usuario.getCredenciais().getEmail(), usuario.getCredenciais().getSenha(), usuario.getCredenciais().getSenha(), usuario.getPis(), horas, minutos);
+        CredenciaisDoUsuarioDto credenciaisDoUsuario = new CredenciaisDoUsuarioDto(usuario.getId(), usuario.getNome(), usuario.getCredenciais().getEmail(), usuario.getCredenciais().getSenha(), usuario.getCredenciais().getSenha(), usuario.getPis(), horas, minutos);
         mv.addObject("cabecalho", "Atualizar cadastro");
         mv.addObject("titulo", "Editar dados do perfil");
         mv.addObject("credenciaisDoUsuario", credenciaisDoUsuario);
@@ -108,14 +108,14 @@ public class UsuariosController {
     @RequestMapping(path="/redefinirsenha", method = RequestMethod.GET)
     public ModelAndView redefinirSenha() {
         ModelAndView mv = new ModelAndView("usuarios/senha");
-        Senha senha = new Senha();
+        SenhaDto senha = new SenhaDto();
         senha.setSenhaAntiga(sessao.getUsuario().getCredenciais().getSenha());
         mv.addObject("senha", senha);
         return mv;
     }
     
     @RequestMapping(path="/redefinirsenha", method = RequestMethod.POST)
-    public ModelAndView salvarSenha(@Valid Senha senha, BindingResult bindingResult) {
+    public ModelAndView salvarSenha(@Valid SenhaDto senha, BindingResult bindingResult) {
         ModelAndView mv = null;
         if(!senha.getNovaSenha().equals(senha.getNovaSenhaRepetida())){
             ObjectError error = new FieldError("senha", "novaSenhaRepetida", "Nova senha e confirmação de senha devem ser iguais");

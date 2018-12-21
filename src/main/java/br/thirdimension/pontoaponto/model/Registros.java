@@ -35,6 +35,9 @@ public class Registros {
     
     @OneToMany(mappedBy = "registros", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<RegistrosDia> registrosDia;
+    
+    @OneToMany(mappedBy = "registros", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private List<Tarefa> tarefa;
 
     public Registros(LocalDate dataRegistro, Usuario usuario) {
         this.dataRegistro = dataRegistro;
@@ -75,4 +78,14 @@ public class Registros {
     public void setRegistrosDia(List<RegistrosDia> registroDia) {
         this.registrosDia = registroDia;
     }
+
+    public List<Tarefa> getTarefa() {
+        return tarefa;
+    }
+
+    public void setTarefa(List<Tarefa> tarefa) {
+        this.tarefa = tarefa;
+    }
+    
+    
 }

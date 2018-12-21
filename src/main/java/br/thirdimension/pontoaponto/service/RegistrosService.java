@@ -5,11 +5,14 @@
  */
 package br.thirdimension.pontoaponto.service;
 
+import br.thirdimension.pontoaponto.dto.TarefaDto;
 import br.thirdimension.pontoaponto.model.Registros;
 import br.thirdimension.pontoaponto.model.RegistrosDia;
+import br.thirdimension.pontoaponto.model.Tarefa;
 import br.thirdimension.pontoaponto.model.Usuario;
 import br.thirdimension.pontoaponto.repository.RegistrosDiaRepository;
 import br.thirdimension.pontoaponto.repository.RegistrosRepository;
+import br.thirdimension.pontoaponto.repository.TarefaRepository;
 import br.thirdimension.pontoaponto.repository.UsuarioRepository;
 import br.thirdimension.pontoaponto.uteis.UsuarioSessao;
 import java.time.LocalDate;
@@ -33,6 +36,9 @@ public class RegistrosService {
 
     @Autowired
     private UsuarioSessao usuarioSessao;
+    
+    @Autowired
+    private TarefaRepository tarefaRepository;
 
     @Autowired
     private RegistrosRepository registrosRepository;
@@ -172,5 +178,18 @@ public class RegistrosService {
             Logger.getLogger(RegistrosService.class.getName()).log(Level.SEVERE, null, ex);
         }
         return listaDeRegistros;
+    }
+    
+    public void removerTarefa(long id) {
+        Optional<Tarefa> tarefa = tarefaRepository.findById(id);
+        tarefaRepository.delete(tarefa.get());
+    }
+    
+    public Tarefa inserirTarefa(TarefaDto tarefaDto) throws Exception {
+        Optional<Registros> registro = registrosRepository.findById(tarefaDto.getRegistroId());
+        Tarefa tarefa = new Tarefa(tarefaDto.getDescricao(), tarefaDto.getTempo(), registro.get());
+        registro.get().getTarefa().add(tarefa);
+        tarefaRepository.save(tarefa);
+        return tarefa;
     }
 }

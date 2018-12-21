@@ -10,6 +10,10 @@ $(document).ready(function () {
             format: 'LT',
             locale: 'pt-br'
         });
+        $('#tempoTarefa').datetimepicker({
+            format: 'LT',
+            locale: 'pt-br'
+        });
     });
 
     $('#registroManualModal').on('hide.bs.modal', function (e) {
@@ -38,7 +42,7 @@ function limparCampoModal(inputId) {
 }
 
 var idRegistro = 0;
-function getRegistroId(id){
+function getRegistroId(id) {
     idRegistro = id;
 }
 
@@ -49,6 +53,7 @@ function inserirRegistro(inputId) {
             location.reload();
         }};
     toastr.options = opcoesToastr;
+   
     $.ajax({
         type: "POST",
         url: "/registros",
@@ -95,12 +100,81 @@ function deleteRegistro(registroId) {
     });
 }
 var registro = {};
+var removerRegistroDia = false;
 function confirmarExclusaoDeRegistro(item) {
+    removerRegistroDia = true;
     registro = JSON.parse(item);
     $("#perguntaConfirmar").text("Deseja remover o registro " + registro.horaFormatada + " ?");
     $('#removerRegistroModal').modal('show');
 }
 
 function removerRegistro() {
-    deleteRegistro(registro.id);
+    if(removerRegistroDia){
+        deleteRegistro(registro.id);
+    }else{
+        deleteTarefa();
+    }
+}
+function validarCampos(descricao, tempo){
+    var ehValido = true;
+    if(!descricao){
+        document.getElementById("task").classList.add("is-invalid");
+        ehValido = false;
+    }
+    if(!tempo){
+       document.getElementById("registroTarefa").classList.add("is-invalid");   
+       ehValido = false;
+    }
+    return ehValido;
+}
+function removerClasse(id, classe){
+    document.getElementById(id).classList.remove(classe);   
+}
+function inserirTarefa(idRegistro) {
+    var descricao = document.getElementById("task").value;
+    var tempo = document.getElementById("registroTarefa").value;
+    if(!validarCampos(descricao, tempo)){
+       return;
+    }
+    var tarefa = {descricao: descricao, tempoFormatado: tempo, registroId: idRegistro};
+    $("#listaTarefas").load("/registros/tarefa", tarefa, function (responseTxt, statusTxt, xhr) {
+        if (statusTxt == "success") {
+            document.getElementById("task").value = "";
+            document.getElementById("registroTarefa").value = "";
+            document.getElementById("task").focus();
+        }
+        if (statusTxt == "error") {
+            var opcoesToastr = {timeOut: 500, hideMethod: 'slideUp', showMethod: 'slideDown', preventDuplicates: true, showEasing: "swing", hideEasing: "linear"};
+            toastr.options = opcoesToastr;
+            toastr.error("Ops.. não foi possível adicionar a tarefa!");
+        }
+        if (xhr.statusText == "complete") {
+            alert("complete: " + xhr.status + ": " + xhr.statusText);
+        }
+    });
+}
+
+var tarefa = null;
+function confirmarExclusaoDeTarefa(tarefa_) {
+    removerRegistroDia = false;
+    tarefa = JSON.parse(tarefa_);
+    $("#perguntaConfirmar").text("Deseja remover a tarefa " + tarefa.descricao + " ?");
+    $('#removerRegistroModal').modal('show');
+}
+
+function deleteTarefa(){
+    var opcoesToastr = {timeOut: 500, hideMethod: 'slideUp', showMethod: 'slideDown', preventDuplicates: true, showEasing: "swing", hideEasing: "linear"};
+    toastr.options = opcoesToastr;
+    $("#listaTarefas").load("/registros/tarefa/" + tarefa.id, function (responseTxt, statusTxt, xhr) {
+        fecharModal('#removerRegistroModal');
+        if (statusTxt == "success") {
+            toastr.success("Tarefa removida com sucesso!");
+        }
+        if (statusTxt == "error") {
+            toastr.error("Ops.. não foi possível remover a tarefa!");
+        }
+        if (xhr.statusText == "complete") {
+            alert("complete: " + xhr.status + ": " + xhr.statusText);
+        }
+    });
 }

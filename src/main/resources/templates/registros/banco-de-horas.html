@@ -22,14 +22,14 @@ and open the template in the editor.
                                 fill: false,
                                 backgroundColor: "red",
                                 borderColor: "red",
-                                data: [[${graficoNegativa.datasetsData}]],
+                                data: [[${graficoParams.datasetsDataNegativas}]],
                             },
                             {
                                 label: 'Horas positivas',
                                 fill: false,
                                 backgroundColor: "blue",
                                 borderColor: "blue",
-                                data: [[${graficoExtra.datasetsData}]],
+                                data: [[${graficoParams.datasetsDataExtras}]],
 
                             }
                         ]
@@ -68,8 +68,7 @@ and open the template in the editor.
                                     },
                                     ticks: {
                                         min: 0,
-                                        max: 8.5,
-                                        // forces step size to be 10 units 
+                                        max: 8.5, 
                                         stepSize: 0.5
                                     }
                                 }

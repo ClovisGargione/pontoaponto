@@ -6,7 +6,7 @@
 package br.thirdimension.pontoaponto.controller;
 
 import br.thirdimension.pontoaponto.dto.BancoDeHorasDto;
-import br.thirdimension.pontoaponto.dto.GraficoLinhaParametros;
+import br.thirdimension.pontoaponto.dto.GraficoLinhaParametrosDto;
 import br.thirdimension.pontoaponto.negocio.MeusRegistrosNegocio;
 import java.util.Optional;
 import javax.ws.rs.QueryParam;
@@ -33,13 +33,9 @@ public class BancoDeHorasController {
     public ModelAndView hoje(@QueryParam("pageSize") Optional<Integer> pageSize, @QueryParam("page") Optional<Integer> page) {
         ModelAndView mv = new ModelAndView(MEUS_BANCO_DE_HORAS_URI);
         BancoDeHorasDto bancoDeHorasDto = meusRegistrosNegocio.calcularBancoDeHoras();
-        GraficoLinhaParametros graficoParametros = meusRegistrosNegocio.getGraficoParametros(); 
-        GraficoLinhaParametros graficoParametrosNegativas = meusRegistrosNegocio.getGraficoParametrosNegativas(); 
-        GraficoLinhaParametros graficoParametrosExtras  = meusRegistrosNegocio.getGraficoParametrosExtras();
+        GraficoLinhaParametrosDto graficoParametros = meusRegistrosNegocio.calcularDadosGrafico();
         mv.addObject("bancoDeHoras", bancoDeHorasDto);
         mv.addObject("graficoParams", graficoParametros);
-        mv.addObject("graficoExtra", graficoParametrosExtras);
-        mv.addObject("graficoNegativa", graficoParametrosNegativas);
         return mv;
     }
     

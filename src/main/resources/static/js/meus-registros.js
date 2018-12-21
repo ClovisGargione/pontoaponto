@@ -23,12 +23,21 @@ $(document).ready(function () {
     $('#registroManualModal').on('hide.bs.modal', function (e) {
         limparCampoModal("registro");
     });
+    /*
+    $('#pageSizeSelect').change(function (evt) {
+        window.location.replace("/meusregistros?pageSize=" + this.value + "&page=1");
+    });*/
 });
 
-function changePageAndSize() {
-    $('#pageSizeSelect').change(function (evt) {
-        window.location.replace("/meusregistros/?pageSize=" + this.value + "&page=1");
-    });
+function changePageAndSize(select) {
+    //$('#pageSizeSelect').change(function (evt) {
+        var parametrosFiltro = montarUrlPesquisa();
+        if(buscarComFiltros){
+        $("#lista-registros").load(url + "pageSize=" + select.value + "&page=1&" + parametrosFiltro);
+        }else{
+            window.location.replace(url + "pageSize=" + select.value + "&page=1&" + parametrosFiltro);
+        }
+   //});
 }
 function applyStyleForElements(id, propertie, style_) {
     var elms = document.getElementById(id);
@@ -36,18 +45,23 @@ function applyStyleForElements(id, propertie, style_) {
 }
 
 function limpar() {
+    buscarComFiltros = false;
     var dataInicial = document.getElementById('dataInicial');
     var dataFinal = document.getElementById('dataFinal');
     dataInicial.value = '';
     dataFinal.value = '';
     location.reload();
 }
+
 var url = "/meusregistros?";
 var filtro = {};
+var buscarComFiltros = false;
+
 function pesquisar() {
     var parametros = montarUrlPesquisa();
     url = "/meusregistros/pesquisar?";
     $("#lista-registros").load(url+parametros);
+    buscarComFiltros = true;
 }
 
 function montarUrlPesquisa(){
@@ -77,15 +91,14 @@ function montarUrlPesquisa(){
 function paginacao(urn){
     var uri = url+urn;
     var parametrosFiltro = montarUrlPesquisa();
-    if(parametrosFiltro){
+    if(buscarComFiltros){
         $("#lista-registros").load(uri+"&"+parametrosFiltro);
     }else{
-        location.href = uri;
+        location.href = uri+"&"+parametrosFiltro;
     }
 }
 var registro = {};
 function confirmarRemoverRegistro(registro_){
-    debugger;
      registro = JSON.parse(registro_);
      $("#perguntaConfirmar").text("Deseja remover os registros do dia " + registro.dataRegistroFormatada + " ?");
      $('#removerRegistroModal').modal('show');

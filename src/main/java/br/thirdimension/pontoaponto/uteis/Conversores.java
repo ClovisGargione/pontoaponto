@@ -30,6 +30,7 @@ public class Conversores {
         int[] hora = new int[2];
         hora[HORA] = (int) (tempo / 60);
         hora[MINUTO] = (int) (tempo % 60); 
+        hora = ajustarMinutos(hora[HORA], hora[MINUTO]);
         return hora;
     }
     

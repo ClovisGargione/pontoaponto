@@ -5,19 +5,23 @@
  */
 package br.thirdimension.pontoaponto.controller;
 
-import br.thirdimension.pontoaponto.dto.DiaDeTrabalho;
-import br.thirdimension.pontoaponto.dto.GraficoParametros;
+import br.thirdimension.pontoaponto.dto.DiaDeTrabalhoDto;
+import br.thirdimension.pontoaponto.dto.GraficoParametrosDto;
 import br.thirdimension.pontoaponto.dto.RegistroManualDto;
 import br.thirdimension.pontoaponto.dto.RegistrosDto;
+import br.thirdimension.pontoaponto.dto.TarefaDto;
 import br.thirdimension.pontoaponto.negocio.RegistrosNegocio;
 import br.thirdimension.pontoaponto.service.RegistrosService;
 import java.time.LocalTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,8 +49,8 @@ public class RegistrosController {
     public ModelAndView hoje() {
         ModelAndView mv = new ModelAndView(REGISTROS_URI);
         RegistrosDto registros = registrosNegocio.filtrarRegistrosParaDataAtual();
-        DiaDeTrabalho diaDeTrabalho = registrosNegocio.calcularTempoTrabalhadoPorJornadaTrabalho(registros);
-        GraficoParametros graficoParametros = registrosNegocio.definirParametrosGrafico(diaDeTrabalho);
+        DiaDeTrabalhoDto diaDeTrabalho = registrosNegocio.calcularTempoTrabalhadoPorJornadaTrabalho(registros);
+        GraficoParametrosDto graficoParametros = registrosNegocio.definirParametrosGrafico(diaDeTrabalho);
         if (registros.getHora().size() > 1 && registros.getHora().get(registros.getHora().size() - 1).getId() == null) {
             registros.getHora().remove(registros.getHora().size() - 1);
         }
@@ -84,8 +88,8 @@ public class RegistrosController {
     public ModelAndView editar(@PathVariable("id") long id) {
         ModelAndView mv = new ModelAndView(REGISTROS_URI);
         RegistrosDto registros = registrosNegocio.filtrarRegistrosPorId(id);
-        DiaDeTrabalho diaDeTrabalho = registrosNegocio.calcularTempoTrabalhadoPorJornadaTrabalho(registros);
-        GraficoParametros graficoParametros = registrosNegocio.definirParametrosGrafico(diaDeTrabalho);
+        DiaDeTrabalhoDto diaDeTrabalho = registrosNegocio.calcularTempoTrabalhadoPorJornadaTrabalho(registros);
+        GraficoParametrosDto graficoParametros = registrosNegocio.definirParametrosGrafico(diaDeTrabalho);
         if (registros.getHora().size() > 1 && registros.getHora().get(registros.getHora().size() - 1).getId() == null) {
             registros.getHora().remove(registros.getHora().size() - 1);
         }
@@ -95,5 +99,29 @@ public class RegistrosController {
         mv.addObject("cardLabel", "Registros de " + registros.getDataRegistroFormatada());
         mv.addObject("registros", registros);
         return mv;
+    }
+    
+    @RequestMapping(path = "/tarefa", method = RequestMethod.POST)
+    public String registrarTarefa(Model model,@Valid TarefaDto tarefaDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("tarefa", tarefaDto);
+        }
+        tarefaDto.setTempo(LocalTime.parse(tarefaDto.getTempoFormatado()));
+        try {
+            registrosService.inserirTarefa(tarefaDto);
+        } catch (Exception ex) {
+            Logger.getLogger(RegistrosController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       RegistrosDto registros = registrosNegocio.filtrarRegistrosParaDataAtual();
+       model.addAttribute("registros", registros);
+        return REGISTROS_URI + " :: lista-tarefas";
+    }
+    
+    @RequestMapping(path = "/tarefa/{id}", method = RequestMethod.GET)
+    public String removerTarefa(Model model, @PathVariable("id") long id){
+        registrosService.removerTarefa(id);
+        RegistrosDto registros = registrosNegocio.filtrarRegistrosParaDataAtual();
+        model.addAttribute("registros", registros);
+        return REGISTROS_URI + " :: lista-tarefas";
     }
 }

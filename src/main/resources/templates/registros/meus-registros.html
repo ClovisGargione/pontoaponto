@@ -25,7 +25,7 @@ and open the template in the editor.
                 <div class="card-body">
                     <div class="row">
                         <div class="col-4">
-                            <div id="input-data" data-toggle="popover" data-placement="bottom" data-container="body" title="Período" data-content="Intervalo entre as datas.">
+                            <div id="input-data" data-toggle="popover" data-placement="top" data-container="body" title="Período" data-content="Intervalo entre as datas.">
                                 <div class="input-daterange input-group" id="datepicker">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id="basic-addon">
@@ -117,7 +117,7 @@ and open the template in the editor.
                         <br>
                         <div class="row">
                             <div class="col-1">
-                                <select class="form-control pagination" id="pageSizeSelect">
+                                <select class="form-control pagination" onchange="changePageAndSize(this)" id="pageSizeSelect">
                                     <option th:each="pageSize : ${pageSizes}" th:text="${pageSize}"
                                             th:value="${pageSize}"
                                             th:selected="${pageSize} == ${selectedPageSize}">

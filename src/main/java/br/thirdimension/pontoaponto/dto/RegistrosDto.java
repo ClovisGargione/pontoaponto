@@ -6,6 +6,8 @@
 package br.thirdimension.pontoaponto.dto;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -23,6 +25,10 @@ public class RegistrosDto implements Comparable<RegistrosDto>{
     private List<RegistroDiaDto> hora;
     
     private DadosBarraDeProgressoDto barraDeProgressoDto;
+    
+    private List<TarefaDto> tarefa;
+	
+    private String tempoTotalTarefa;
     
 
     public RegistrosDto(Long id, String dataRegistroFormatada, LocalDate dataRegistro, List<RegistroDiaDto> hora) {
@@ -90,6 +96,28 @@ public class RegistrosDto implements Comparable<RegistrosDto>{
     
     public boolean isMostrarAvisoRegistroIncompleto(){
         return !dataRegistro.isEqual(LocalDate.now());
+    }
+
+    public List<TarefaDto> getTarefa() {
+        return tarefa;
+    }
+
+    public void setTarefa(List<TarefaDto> tarefa) {
+        this.tarefa = tarefa;
+    }
+    
+    public void setTempoTotalTarefa(String tempoTotalTarefa) {
+        this.tempoTotalTarefa = tempoTotalTarefa;
+    }
+	
+    public String getTempoTotalTarefa() {
+        LocalTime total = LocalTime.MIN; 
+        for(TarefaDto tarefaDto : tarefa){
+           total = total.plusHours(tarefaDto.getTempo().getHour());
+           total = total.plusMinutes(tarefaDto.getTempo().getMinute());
+        }
+        this.tempoTotalTarefa = total.format(DateTimeFormatter.ofPattern("HH:mm"));
+        return this.tempoTotalTarefa;
     }
     
     

@@ -5,12 +5,14 @@
  */
 package br.thirdimension.pontoaponto.negocio;
 
-import br.thirdimension.pontoaponto.dto.DiaDeTrabalho;
-import br.thirdimension.pontoaponto.dto.GraficoParametros;
+import br.thirdimension.pontoaponto.dto.DiaDeTrabalhoDto;
+import br.thirdimension.pontoaponto.dto.GraficoParametrosDto;
 import br.thirdimension.pontoaponto.dto.RegistroDiaDto;
 import br.thirdimension.pontoaponto.dto.RegistrosDto;
+import br.thirdimension.pontoaponto.dto.TarefaDto;
 import br.thirdimension.pontoaponto.model.Registros;
 import br.thirdimension.pontoaponto.model.RegistrosDia;
+import br.thirdimension.pontoaponto.model.Tarefa;
 import br.thirdimension.pontoaponto.model.Usuario;
 import br.thirdimension.pontoaponto.service.RegistrosService;
 import br.thirdimension.pontoaponto.uteis.Conversores;
@@ -84,9 +86,9 @@ public class RegistrosNegocio {
      * @param listaRegistros - registros de ponto do dia
      * @return - Objeto dia de trabalho definido
      */
-    public DiaDeTrabalho calcularTempoTrabalhadoPorJornadaTrabalho(RegistrosDto registros) {
+    public DiaDeTrabalhoDto calcularTempoTrabalhadoPorJornadaTrabalho(RegistrosDto registros) {
         LocalTime totalHorasTrabalhadas = getTotalSomaHorasTrabalhadas(registros);
-        DiaDeTrabalho diaDeTrabalho = definirTempoTrabalhadoNoDiaDeTrabalho(totalHorasTrabalhadas);
+        DiaDeTrabalhoDto diaDeTrabalho = definirTempoTrabalhadoNoDiaDeTrabalho(totalHorasTrabalhadas);
         Long diferencaJornadaETotalTrabalhadoEmMinutos = 0L;
         if (sessao.getUsuario().getJornadaDeTrabalho().isAfter(diaDeTrabalho.getTempoTrabalhado())) {
             diferencaJornadaETotalTrabalhadoEmMinutos = diaDeTrabalho.getTempoTrabalhado().until(sessao.getUsuario().getJornadaDeTrabalho(), ChronoUnit.MINUTES);
@@ -113,8 +115,8 @@ public class RegistrosNegocio {
      * @param diaDeTrabalho
      * @return 
      */
-    public GraficoParametros definirParametrosGrafico(DiaDeTrabalho diaDeTrabalho){
-        GraficoParametros graficoParametros = new GraficoParametros();
+    public GraficoParametrosDto definirParametrosGrafico(DiaDeTrabalhoDto diaDeTrabalho){
+        GraficoParametrosDto graficoParametros = new GraficoParametrosDto();
         graficoParametros.getLabels().add(HORAS_TRABALHADAS);
         graficoParametros.getDatasetsLabel().add(HORAS_TRABALHADAS);
         graficoParametros.getDataBackgroundColor().add(COR_GRAFICO_HORAS_TRABALHADAS);
@@ -191,8 +193,8 @@ public class RegistrosNegocio {
      * @param minutos
      * @return 
      */
-    private DiaDeTrabalho definirTempoTrabalhadoNoDiaDeTrabalho(LocalTime tempoTrabalhado) {
-        DiaDeTrabalho diaDeTrabalho = new DiaDeTrabalho();
+    private DiaDeTrabalhoDto definirTempoTrabalhadoNoDiaDeTrabalho(LocalTime tempoTrabalhado) {
+        DiaDeTrabalhoDto diaDeTrabalho = new DiaDeTrabalhoDto();
         diaDeTrabalho.setTempoTrabalhado(tempoTrabalhado);
         diaDeTrabalho.setTempoTrabalhadoFormatado(conversor.localTimeParaStringHora(tempoTrabalhado));
         diaDeTrabalho.setJornadaDeTrabalho("Jornada de trabalho: " + conversor.localTimeParaStringHora(sessao.getUsuario().getJornadaDeTrabalho()));
@@ -219,13 +221,16 @@ public class RegistrosNegocio {
             try {
                 registro = registrosService.inserirRegistroManual(LocalDate.now());
                 registro.setRegistrosDia(new ArrayList<>());
+                registro.setTarefa(new ArrayList<>());
             } catch (Exception ex) {
                 Logger.getLogger(RegistrosNegocio.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        List<TarefaDto> tarefasDto = converterListaEntidadeTarefaParaListaDto(registro.getTarefa());
         List<RegistroDiaDto> registrosDiaDto = converterListaEntidadeEmListaDto(registro.getRegistrosDia());
         Collections.sort(registrosDiaDto);
         RegistrosDto registrosDto = new RegistrosDto(registro.getID(), conversor.localDateParaString(registro.getDataRegistro()), registro.getDataRegistro(), registrosDiaDto);
+        registrosDto.setTarefa(tarefasDto);
         return registrosDto;
     }
     
@@ -235,5 +240,13 @@ public class RegistrosNegocio {
             registrosDiaDto.add(new RegistroDiaDto(registroDia.getId(), registroDia.getHora(), conversor.localTimeParaStringHora(registroDia.getHora())));
         }
         return registrosDiaDto;
+    }
+
+    private List<TarefaDto> converterListaEntidadeTarefaParaListaDto(List<Tarefa> tarefa) {
+        List<TarefaDto> tarefasDto = new ArrayList<>();
+        for(Tarefa t : tarefa){
+            tarefasDto.add(new TarefaDto(t.getID(), t.getDescricao(), t.getTempo(), conversor.localTimeParaStringHora(t.getTempo()),t.getRegistros().getID()));
+        }
+        return tarefasDto;
     }
 }

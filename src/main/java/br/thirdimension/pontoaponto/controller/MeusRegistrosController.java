@@ -42,7 +42,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class MeusRegistrosController {
     
     private static final int INITIAL_PAGE = 0;
-    private static final int INITIAL_PAGE_SIZE = 20;
+    private static final int INITIAL_PAGE_SIZE = 5;
     private static final int[] PAGE_SIZES = { 5, 10};
 
     private static final String MEUS_REGISTROS_URI = "registros/meus-registros";
