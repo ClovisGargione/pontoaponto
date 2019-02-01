@@ -1,0 +1,122 @@
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      layout:decorate="~{layouts/layout}">
+
+    <head>
+        <script src="/js/login.js"></script>
+    </head>
+
+    <body class="background-image">
+
+        <br/>
+        <div layout:fragment="header" class="jumbotron shadow" style="padding: 1rem 3rem; opacity: 0.7;">
+            <h1>Ponto a ponto</h1>
+            <p>
+                Esse é o sistema onde você organiza suas horas!!!
+            </p>
+        </div>
+        <div layout:fragment="content"  class="container">
+
+            <div class="d-lg-block embed-responsive-item container h-100">
+                <div class="row align-items-center h-100">
+                    <div class="col-sm-12 col-md-4 mx-auto">
+                        <div class="embed-responsive-item jumbotron shadow login-transparente" style="padding-top: 2rem; padding-bottom: 2rem">
+                            <h1 class="text-center">Login</h1>
+                            <form th:action="@{/login}" method="post">
+                                <div class="form-group">
+                                    <label for="inputLogin">Usuário</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"> <i class="fa fa-user fa"
+                                                                               aria-hidden="true"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" 
+                                               class="form-control" id="username" name="username"
+                                               placeholder="Informe o usuário" autocomplete="off" required>
+                                            <div class="invalid-feedback">Usuário é obrigatório.</div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="inputSenha">Senha</label>
+                                    <div class="input-group" id="show_hide_password">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"> <i class="fa fa-lock fa"
+                                                                               aria-hidden="true"></i>
+                                            </span>
+                                        </div>
+                                        <input type="password" class="form-control" id="password"
+                                               name="password" placeholder="Informe a senha"
+                                               required>
+                                            <div class="input-group-append" onclick="showHidePassword('password', 'icone')">
+                                                <span class="input-group-text"> <a href="#"><i id="icone" class="fa fa-eye-slash" aria-hidden="true"></i></a></span>
+                                            </div>
+                                            <div class="invalid-feedback">Senha é obrigatório.</div>
+                                    </div>
+                                </div>
+                                <div th:if="${param.error}">
+                                    <div class="alert alert-danger" role="alert">
+                                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                        Usuário ou senha inválidos
+                                    </div>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input"  id="lembrarCheck"> 
+                                        <label class="custom-control-label" for="lembrarCheck">Lembrar-me</label>
+                                </div>
+                                <button type="submit"
+                                        onclick="lembrarLogin()"
+                                        class="btn btn-primary btn-block">
+                                    <i class="fa fa-sign-in"></i> Entrar
+                                </button>
+                                <small id="emailHelp" class="form-text text-muted">Nunca
+                                    compartilhe suas crendenciais</small>
+                                <div class="pb-0">
+                                    <span class="form-text" style="font-size:15px">
+                                        Não tem conta? <a href="/usuarios">Faça seu cadastro</a>
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div th:if="${param.error}">
+                 <div class="alert alert-danger" role="alert">
+                     <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                     <span class="sr-only">Error:</span>
+                     Usuário ou senha inválidos
+                 </div>
+             </div>
+ 
+             <h2>Login</h2>
+ 
+             <form th:action="@{/login}" method="post">
+                 <div class="form-group">
+                     <label> Login: <input class="form-control" type="text" name="username"/> </label>
+                 </div>
+ 
+                 <div class="form-group">
+                     <label> Senha: <input class="form-control" type="password" name="password"/> </label>
+                 </div>
+ 
+                 <div class="form-group">
+                     <button type="submit" class="btn btn-primary">Enviar</button>
+                     <button type="button" class="btn btn-default" onclick="javascript: window.location.href = '/home'">Voltar</button>
+                 </div>
+ 
+                 <p>
+                     Não tem conta? <a href="/usuarios">Faça seu cadastro</a><br/>
+                 </p>
+ 
+             </form>
+            -->
+        </div>
+
+    </body>
+
+
+</html>

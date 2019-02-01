@@ -1,0 +1,25 @@
+server:
+  port: 8088
+spring:
+  application:
+    name: pontoaponto
+     # REST   
+  data:
+    rest:
+      base-path: rest
+  datasource:
+    url: jdbc:mysql://localhost:3306/world
+    username: root
+    password: admin
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      dialect: org.hibernate.dialect.MySQL5Dialect
+      showSql: true
+      hbm2ddl: true
+      ddlAuto: update
+  # JACKSON
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html layout:decorate="~{layouts/layout}">
+    <head>
+        <link rel="stylesheet" href="/webjars/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.min.css" />
+        <script src="/webjars/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js"></script>
+        <script src="/webjars/bootstrap-datepicker/1.4.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+        <link rel="stylesheet" href="/css/tempusdominus-bootstrap-4.min.css" />
+        <script type="text/javascript" src="/js/tempusdominus-bootstrap-4.min.js"></script>
+        <script src="/js/meus-registros.js"></script>
+    </head>
+    <body class="background-default">
+        <div layout:fragment="header">
+            <br/>
+        </div>
+        <div layout:fragment="content" class="container">
+            <div class="card shadow">
+                <h4 class="card-header">
+                    <i class="fa fa-filter"></i> Filtrar registros
+                </h4>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <div id="input-data" data-toggle="popover" data-placement="top" data-container="body" title="Período" data-content="Intervalo entre as datas.">
+                                <div class="input-daterange input-group" id="datepicker">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    <input 
+                                        class="form-control" 
+                                        id="dataInicial"
+                                        data-provide="datepicker">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text" id="basic-addon2"
+                                              style="border-right: 0px;">&nbsp;até&nbsp;</span>
+                                    </div>
+                                    <input 
+                                        class="form-control" 
+                                        id="dataFinal"
+                                        data-provide="datepicker">
+                                </div>
+                                <small id="erroData" class="text-danger" style="display: none;">Data
+                                    final deve ser maior que a data inicial</small>
+                            </div>
+                        </div>
+                        <div class="col-5 align-self-center d-flex justify-content-center">
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="todos" name="filtro" class="custom-control-input" checked>
+                                <label class="custom-control-label" for="todos">Todos</label>
+                            </div>
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="incompletos" name="filtro" class="custom-control-input">
+                                <label class="custom-control-label" for="incompletos">Registros incompletos</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="pull-right">
+                        <button type="button" class="btn btn-light btn-sm" onclick="limpar()"><i class="fa fa-eraser"></i> Limpar</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="pesquisar()"><i class="fa fa-search"></i> Filtrar</button>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="card shadow">
+                <div class="card-block padding-card-button">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#meuRegistroManualModal"><i class="fa fa-calendar-check-o"></i> Adicionar dia</button>
+                </div>
+            </div>
+            <br>
+            <div class="card shadow">
+                <h4 class="card-header">
+                    <i class="fa fa-th-list"></i> Meus registros
+                </h4>
+                <div class="card-body" id="lista-registros">
+                    <div th:fragment="resultado-pesquisa">
+                        <div class="row">
+                            <div class="col-12">
+                                <div th:each="registro, iterationStatus : ${registros}" class="list-group-item list-group-item-action flex-column align-items-start">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <span class="link" data-toggle="tooltip" data-placement="top"
+                                              title="Registros do dia" style="display: flex"><h5
+                                                class="mb-1" th:utext="${registro.dataRegistroFormatada}"></h5> 
+                                            <i class="fa fa-clock-o pl-1 pt-1" aria-hidden="true"></i>
+                                        </span>
+                                        <span th:onclick="'getRegistroId('+${registro.id}+')'" data-toggle="modal" data-target="#registroManualModal" class="text-right cursor-pointer" th:if="${#lists.size(registro.hora) % 2 != 0 && registro.mostrarAvisoRegistroIncompleto}"> 
+                                            <small style="color: orange; font-size: 20px" data-toggle="popover" data-placement="top" data-container="body" title="Registro incompleto!" data-content="Clique para adicionar um registro.">
+                                                <i class="fa fa-warning"></i> 
+                                            </small>
+
+                                        </span>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 mb-1">
+                                            <div class="progress" data-toggle="popover" data-placement="right" data-container="body" title="Tempo trabalhado" data-html="true" th:data-content="${registro.barraDeProgressoDto.tempoTrabalhadoString}" th:if="${#lists.size(registro.hora)} % 2 == 0">
+                                                <div class="progress-bar barra-horas-trabalhadas" role="progressbar" th:style="'width:'+@{${registro.barraDeProgressoDto.horasTrabalhadas}}+'%'" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
+                                                <div class="progress-bar barra-horas-extras" role="progressbar" th:style="'width:'+@{${registro.barraDeProgressoDto.extra}}+'%'" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                                <div class="progress-bar barra-horas-restantes" role="progressbar" th:style="'width:'+@{${registro.barraDeProgressoDto.faltante}}+'%'"  aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center">
+                                        <div class="col-10">
+                                            <span th:each="hora, iterationStatus : ${registro.hora}">
+                                                <small th:utext="${hora.horaFormatada}" class="badge badge-primary"></small>
+                                            </span>
+                                        </div>
+                                        <div class="col-2">
+                                            <a th:onclick="'confirmarRemoverRegistro('+${registro.toString()}+')'" class="cursor-pointer"><small class="pull-right ml-2"><i class="fa fa-trash text-danger"></i></small></a>
+                                            <a th:href="@{'/registros/editar/' + ${registro.id}}"><small class="pull-right"><i class="fa fa-pencil-square-o"></i> Editar</small></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-1">
+                                <select class="form-control pagination" onchange="changePageAndSize(this)" id="pageSizeSelect">
+                                    <option th:each="pageSize : ${pageSizes}" th:text="${pageSize}"
+                                            th:value="${pageSize}"
+                                            th:selected="${pageSize} == ${selectedPageSize}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-11" th:if="${pager.totalPages != 1}">
+                                <div class="pull-right">
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination">
+                                            <li class="page-item" th:class="${pager.number == 0} ? disabled">
+                                                <a class="page-link link-color" th:onclick="'paginacao(\''+'?pageSize='+${selectedPageSize}+'&page='+1+'\')'">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                    <span class="sr-only">Anterior</span>
+                                                </a>
+                                            </li>
+                                            <li class="page-item" th:class="${pager.number == 0} ? disabled">
+                                                <a class="page-link link-color" th:onclick="'paginacao(\''+'pageSize='+${selectedPageSize}+'&page='+${pager.number}+'\')'">←</a>
+                                            </li>
+                                            <li class="page-item" th:class="${pager.number == (page - 1)} ? 'page-item active' : 'link-color'"
+                                                th:each="page : ${#numbers.sequence(pager.startPage, pager.endPage)}">
+                                                <a class="page-link" th:onclick="'paginacao(\''+'pageSize='+${selectedPageSize}+'&page='+${page}+'\')'"
+                                                   th:text="${page}"></a>
+                                            </li>
+                                            <li class="page-item" th:class="${pager.number + 1  == pager.totalPages} ? 'disabled'">
+                                                <a class="page-link link-color" 
+                                                   th:onclick="'paginacao(\''+'pageSize='+${selectedPageSize}+'&page='+${pager.number + 2}+'\')'">→</a>
+                                            </li>
+                                            <li class="page-item" th:class="${pager.number + 1 == pager.totalPages} ? disabled">
+                                                <a class="page-link link-color" 
+                                                   th:onclick="'paginacao(\''+'pageSize='+${selectedPageSize}+'&page='+${pager.totalPages}+'\')'" 
+                                                   aria-label="Next">
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                    <span class="sr-only">Próximo</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal registrar data manual -->
+            <div class="modal fade" id="meuRegistroManualModal" tabindex="-1" role="dialog" aria-labelledby="registroDiaModal" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="titulo"><i class="fa fa-calendar-check-o" aria-hidden="true"></i> Registro de data</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <div class="date input-group">
+                                    <input 
+                                        class="form-control" 
+                                        id="datepickerDia"
+                                        data-provide="datepicker">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text" id="basic-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light btn-sm" data-dismiss="modal"><i class="fa fa-close" aria-hidden="true"></i> Fechar</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="inserirRegistroData('datepickerDia')"><i class="fa fa-save" aria-hidden="true"></i> Registrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal registro manual -->
+            <div class="modal fade" id="registroManualModal" tabindex="-1" role="dialog" aria-labelledby="registroModal" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="titulo"><i class="fa fa-pencil" aria-hidden="true"></i> Registro manual</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <div class="input-group date" id="horaRegistroManual" data-target-input="nearest">
+                                    <input type="text" id="registro" class="form-control datetimepicker-input" data-target="#horaRegistroManual"/>
+                                    <div class="input-group-append" data-target="#horaRegistroManual" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-clock-o"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light btn-sm" data-dismiss="modal"><i class="fa fa-close" aria-hidden="true"></i> Fechar</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="inserirRegistro('registro')"><i class="fa fa-save" aria-hidden="true"></i> Registrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal remover registro -->
+            <div class="modal fade" id="removerRegistroModal" tabindex="-1" role="dialog" aria-labelledby="registroModal" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="titulo"><i class="fa fa-clock-o" aria-hidden="true"></i> Remover registro</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <p id="perguntaConfirmar"></p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light btn-sm" data-dismiss="modal"><i class="fa fa-close" aria-hidden="true"></i> Fechar</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removerRegistro()"><i class="fa fa-trash" aria-hidden="true"></i> Remover</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

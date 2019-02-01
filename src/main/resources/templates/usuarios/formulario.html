@@ -1,0 +1,150 @@
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+      layout:decorate="~{layouts/layout}">
+
+    <body class="background-default">
+
+        <div layout:fragment="header">
+            <div class="jumbotron shadow default-color" style="padding: 1rem 3rem" sec:authorize="not isAuthenticated()">
+                <h1>Ponto a ponto</h1>
+                <p>
+                    Esse é o sistema onde você organiza suas horas!!!
+                </p>
+            </div>
+            <br sec:authorize="isAuthenticated()"/>
+        </div>
+        <div layout:fragment="content" class="container">
+
+            <div class="card shadow">
+                <h4 class="card-header">
+                    <i class="fa fa-id-card-o"></i>  <span th:text="${cabecalho}"></span>
+                </h4>
+                <div class="card-block padding-card">
+                    <h5 class="card-title" th:text="${titulo}"></h5>
+                    <form action="#" th:action="@{/usuarios}" th:object="${credenciaisDoUsuario}" method="post">
+                        <fieldset>
+                            <div class="form-row">
+                                <div class="col-md-6 esconder">
+                                    <div class="form-group">
+                                        <label for="nome">Id:</label >
+                                        <input class="form-control" id="id" type="number" th:field="*{id}" readonly="readonly">
+                                            <div th:if="${#fields.hasErrors('id')}" th:errors="*{id}">preencher o id</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="nome">Nome:</label>
+                                        <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('nome'))} ? is-invalid" id="nome" type="text" th:field="*{nome}"/>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}">preencher o nome</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="email">Login:</label>
+                                        <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('email'))} ? is-invalid" id="email" type="text" th:field="*{email}"/>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">preencher o email</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" th:class="*{id} ? esconder : col-md-6">
+                                    <div class="form-group">
+                                        <label for="senha">Senha:</label>
+                                        <div class="input-group" id="show_hide_password">
+                                            <input class="form-control" id="senha" th:classappend="${not #lists.isEmpty(#fields.errors('senha'))} ? is-invalid" name="senha" autocomplete="senha atual" type="password" th:value="*{senha}"/>
+                                            <div class="input-group-append" onclick="showHidePassword('senha', 'iconeSenha')">
+                                                <span class="input-group-text"> <a href="#"><i id="iconeSenha" class="fa fa-eye-slash" aria-hidden="true"></i></a></span>
+                                            </div>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}">preencher a senha</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" th:class="*{id} ? esconder : col-md-6">
+                                    <div class="form-group">
+                                        <label for="senha">Confirmação da senha:</label>
+                                        <div class="input-group">
+                                            <input class="form-control" id="confirmacaoSenha" th:classappend="${not #lists.isEmpty(#fields.errors('confirmacaoSenha'))} ? is-invalid" name="confirmacaoSenha" autocomplete="senha atual" type="password" th:value="*{confirmacaoSenha}"/>
+                                            <div class="input-group-append" onclick="showHidePassword('confirmacaoSenha', 'iconeConfirmacaoSenha')">
+                                                <span class="input-group-text"> <a href="#"><i id="iconeConfirmacaoSenha" class="fa fa-eye-slash" aria-hidden="true"></i></a></span>
+                                            </div>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmacaoSenha')}" th:errors="*{confirmacaoSenha}">preencher a senha</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="pis">Jornada de trabalho</label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <span class="align-items-center h-100 flex">
+                                                    <small for="horas">Horas:</small>
+                                                    <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('horas'))} ? is-invalid" id="horas" min="1" max="23" type="number" th:field="*{horas}"/>
+                                                </span>
+                                                <div class="invalid-feedback" th:if="${#fields.hasErrors('horas')}" th:errors="*{horas}">preencher a hora</div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <span class="align-items-center h-100 flex">
+                                                    <small for="minutos">Minutos:</small>
+                                                    <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('minutos'))} ? is-invalid" id="minutos" min="0" max="59" type="number" th:field="*{minutos}"/>
+                                                </span>
+                                                <div class="invalid-feedback" th:if="${#fields.hasErrors('minutos')}" th:errors="*{minutos}">preencher os minutos</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="pis">Pis:</label>
+                                        <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('pis'))} ? is-invalid" id="pis" type="text" th:field="*{pis}"/>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('pis')}" th:errors="*{pis}">preencher o pis</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="pis">Saldo inicial banco de horas</label>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <span class="align-items-center h-100 flex">
+                                                    <small for="saldoHoras">Horas:</small>
+                                                    <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('saldoHoras'))} ? is-invalid" id="saldoHoras" min="0" max="500" type="number" th:field="*{saldoHoras}"/>
+                                                </span>
+                                            </div>
+                                            <div class="col-5">
+                                                <span class="align-items-center h-100 flex">
+                                                    <small for="minutos">Minutos:</small>
+                                                    <input class="form-control" th:classappend="${not #lists.isEmpty(#fields.errors('saldoMinutos'))} ? is-invalid" id="saldoMinutos" min="0" max="59" type="number" th:field="*{saldoMinutos}"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 align-self-center justify-content-center">
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="positiva" name="saldo"  class="custom-control-input" value="true" th:field="*{saldoPositivo}" checked>
+                                            <label class="custom-control-label" for="positiva">Positiva</label>
+                                    </div>
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="negativa" name="saldo" class="custom-control-input" value="false" th:field="*{saldoPositivo}">
+                                            <label class="custom-control-label" for="negativa">Negativa</label>
+                                    </div>
+                                </div>
+                            </div>   
+                        </fieldset>
+                        <div class="card-footer bg-transparent text-right">
+                            <div class="form-group">
+                                <button class="btn btn-light btn-sm" type="button" onclick="javascript: window.location.href = '/'"><i class="fa fa-close" aria-hidden="true"></i> Cancelar</button>
+                                <button class="btn btn-outline-secondary btn-sm" type="submit"><i class="fa fa-paper-plane-o" aria-hidden="true"></i> Enviar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>    
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+      layout:decorate="~{layouts/layout}">
+
+
+
+    <body class="background-default">
+
+        <br/>
+        <div layout:fragment="header" class="container jumbotron mt-4 shadow default-color">
+
+            <h1>Ponto a ponto</h1>
+            <p>
+                Esse é o sistema onde você organiza suas horas!!!
+            </p>
+        </div>
+        <div layout:fragment="content" class="container">
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <h3>Login</h3>
+
+                    <p sec:authorize="isAuthenticated()">
+                        Você está acessando o sistema de controle de ponto como
+                        <span sec:authentication="name">fulano</span>
+                    </p>
+                    <p sec:authorize="not isAuthenticated()">
+                        Faça login para poder visualizar seus registros de ponto.
+                    </p>
+                    
+                    <p >
+                        <div sec:authorize="isAuthenticated()">
+                            <a class="btn btn-primary" href="/usuarios/editar"><i class="fa fa-user"></i> Editar perfil</a>
+                        </div>
+                        <div sec:authorize="not isAuthenticated()">
+                            <a class="btn btn-primary" href="/login"><i class="fa fa-sign-in"></i> Login</a>
+                        </div>
+                    </p>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <h3>Veja seus registros de ponto</h3>
+                    <p>
+                        Aqui você pode visualizar seus registros de ponto.<br>
+                        Lembre-se sempre de manter seu apontamento de horas atualizado!
+                    </p>
+                    <p>
+                        <a class="btn btn-default" href="/meusregistros">Controle de ponto</a>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+    </body>
+
+
+</html>

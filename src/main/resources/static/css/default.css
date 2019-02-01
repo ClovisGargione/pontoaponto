@@ -1,0 +1,186 @@
+html, body{
+    height: 100%;
+    background-color: #E6E6E6 !important;
+}
+
+.default-color{
+    background-color: #A4A4A4 !important;
+}
+
+.background-image {
+    position:absolute;
+    overflow: auto;
+    display: table;
+    width:100%; 
+    background-image: url("../imagens/time.jpg") !important;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
+}
+
+.background-default{
+    position:absolute;
+    display: table;
+    overflow: auto;
+    width:100%; 
+    background-image: url("../imagens/background.jpg") !important;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
+} 
+
+.login-transparente{
+    opacity: 0.9;
+}
+
+.login-transparente:focus-within{
+    opacity: 1.0;
+}
+
+.padding-card {
+    padding: 1.25rem;
+}
+
+.margin-card {
+    margin: 1rem;
+}
+
+.shadow {
+    box-shadow: 5px 10px 18px #888888;
+}
+
+.esconder{
+    display: none;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 2px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #e9ecef; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
+.horas_trabalhadas{
+    color: rgba(54, 162, 235, 1);
+    font-weight: bold;
+}
+
+.horas_restantes{
+    color: rgba(255, 191, 0, 1);
+    font-weight: bold;
+}
+
+.horas_extras{
+    color: rgba(4, 180, 49, 1);
+    font-weight: bold;
+}
+
+.fim_jornada{
+    color: rgba(11, 56, 97, 1);
+    font-weight: bold;
+}
+
+.flex{
+    display: flex;
+}
+
+.padding-card-button{
+    padding: 0.5rem;
+}
+
+#loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+/* Transparent Overlay */
+#overlay {
+  position: absolute;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: black;
+    opacity: 0.5;
+    height: 100%;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Add animation to "page content" */
+.animate-bottom {
+  position: relative;
+  -webkit-animation-name: animatebottom;
+  -webkit-animation-duration: 1s;
+  animation-name: animatebottom;
+  animation-duration: 1s
+}
+
+@-webkit-keyframes animatebottom {
+  from { bottom:-100px; opacity:0 } 
+  to { bottom:0px; opacity:1 }
+}
+
+@keyframes animatebottom { 
+  from{ bottom:-100px; opacity:0 } 
+  to{ bottom:0; opacity:1 }
+}
+
+.link-color{
+    color: #007bff !important;
+    text-decoration: none !important;
+    background-color: transparent !important;
+    -webkit-text-decoration-skip: objects;
+}
+
+.cursor-pointer{
+    cursor: pointer;
+}
+
+.barra-horas-trabalhadas{
+    background-color: #91c5f2 !important;
+}
+
+.barra-horas-restantes{
+    background-color: #ffdb85 !important;
+}
+
+.barra-horas-extras{
+    background-color: rgba(1, 223, 58, 0.2) !important;
+}

@@ -1,0 +1,41 @@
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark"
+     style="box-shadow: 10px 4px 4px #888888; position: static" th:fragment="navbar">
+    <a class="navbar-brand" href="/home"><img src="/imagens/time-card.png" class="logotipo" alt="Ponto a ponto"></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarTogglerDemo02"
+            aria-controls="navbarTogglerDemo02" aria-expanded="false"
+            aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        <ul id="navbar-list" class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item" id="hoje">
+                <a class="nav-link" href="/registros">Hoje<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item" id="meusregistros">
+                <a class="nav-link" href="/meusregistros">Meus registros<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item" id="bancodehoras">
+                <a class="nav-link" href="/bancodehoras">Banco de horas<span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown"><a
+                        class="nav-link dropdown-toggle dropdown-menu-right branco" href="#"
+                        id="navbarDropdown" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false" sec:authentication="name"> Ponto </a>
+                    <div class="dropdown-menu large-dropdown"
+                         aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/usuarios/editar"><i class="fa fa-id-card-o"></i> Cadastro</a>
+                        <a class="dropdown-item" href="/usuarios/redefinirsenha"><i class="fa fa-key"></i> Trocar senha</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item pointer" href="/logout"><i
+                                class="fa fa-sign-out"></i> Sair</a>
+                    </div>
+                </li>
+            </ul>
+        </form>
+    </div>
+</nav>
